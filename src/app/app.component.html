@@ -1,0 +1,47 @@
+<ion-app>
+<ion-split-pane contentId="main-content">
+<!-- MENU BURGER -->
+<ion-menu contentId="main-content" type="overlay">
+<ion-header>
+<ion-toolbar color="primary">
+<ion-title>GLC App</ion-title>
+</ion-toolbar>
+</ion-header>
+<ion-content>
+<ion-list inset>
+<!-- Les 4 premiers items renvoient vers les tabs correspondants -->
+<ion-item routerLink="/tabs/accueil" routerDirection="root">
+<ion-icon name="home-outline" slot="start"></ion-icon>
+<ion-label>Accueil</ion-label>
+</ion-item>
+<ion-item routerLink="/pages/mot-du-pasteur" routerDirection="forward">
+<ion-icon name="book-outline" slot="start"></ion-icon>
+<ion-label>Mot du pasteur</ion-label>
+</ion-item>
+<ion-item routerLink="/tabs/agenda" routerDirection="root">
+<ion-icon name="calendar-outline" slot="start"></ion-icon>
+<ion-label>Agenda</ion-label>
+</ion-item>
+<ion-item routerLink="/pages/ce-que-nous-croyons" routerDirection="forward">
+<ion-icon name="bulb-outline" slot="start"></ion-icon>
+<ion-label>Ce que nous croyons</ion-label>
+</ion-item>
+<ion-item routerLink="/tabs/a-venir" routerDirection="root">
+<ion-icon name="time-outline" slot="start"></ion-icon>
+<ion-label>À venir</ion-label>
+</ion-item>
+<ion-item routerLink="/tabs/nous-rejoindre" routerDirection="root">
+<ion-icon name="people-outline" slot="start"></ion-icon>
+<ion-label>Nous rejoindre</ion-label>
+</ion-item>
+</ion-list>
+</ion-content>
+</ion-menu>
+
+
+<!-- CONTENU PRINCIPAL: les Tabs occupent le contenu -->
+<div class="ion-page" id="main-content">
+<ion-router-outlet></ion-router-outlet>
+</div>
+</ion-split-pane>
+</ion-app>

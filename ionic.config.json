@@ -1,0 +1,7 @@
+{
+  "name": "glc-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
