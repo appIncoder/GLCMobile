@@ -13,7 +13,7 @@ import { RouterModule } from '@angular/router';
 })
 export class AccueilPage implements OnInit {
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
   }
