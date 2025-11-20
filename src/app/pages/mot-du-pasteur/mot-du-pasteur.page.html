@@ -1,9 +1,9 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button menu="main-menu"></ion-menu-button>
+      <ion-menu-button (click)="logAndToggle($event)"></ion-menu-button>
     </ion-buttons>
-    <ion-title>Mot du pasteur</ion-title>
+    <ion-title>Mot du Pasteur</ion-title>
   </ion-toolbar>
 </ion-header>
 
