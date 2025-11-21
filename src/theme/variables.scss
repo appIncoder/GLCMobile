@@ -1,2 +1,62 @@
-// For information on how to create your own theme, please see:
-// http://ionicframework.com/docs/theming/
+:root {
+  /** Couleurs de base **/
+  --ion-background-color: #000000;
+  --ion-background-color-rgb: 0, 0, 0;
+  --ion-card-background-color: #f5f5f5;
+
+  --ion-text-color: #f5f5f5;
+  --ion-card-text-color: #000000;
+  --ion-text-color-rgb: 245, 245, 245;
+
+  /** Couleur d’accent **/
+  --ion-color-primary: #3b82f6;
+  --ion-color-primary-rgb: 59, 130, 246;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #2563eb;
+  --ion-color-primary-tint: #60a5fa;
+
+  /** Couleurs secondaires **/
+  --ion-color-medium: #9ca3af;
+  --ion-color-light: #1f2937;
+
+  /** Surfaces **/
+  --ion-card-background: #111111;
+  --ion-item-background: #111111;
+
+  /** Styles **/
+  --app-border-radius-lg: 18px;
+  --app-border-radius-md: 12px;
+  --app-shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Applique le fond noir global */
+ion-app,
+ion-content {
+  --background: var(--ion-background-color);
+}
+
+/* Toolbar noire & épurée */
+ion-toolbar {
+  --background: #000;
+  --border-color: transparent;
+  --color: var(--ion-text-color);
+}
+
+/* Cards sur fond noir */
+ion-card {
+  background: var(--ion-card-background-color) !important;
+  border-radius: var(--app-border-radius-lg);
+  box-shadow: var(--app-shadow-soft);
+  color: var(--ion-card-text-color);
+}
+
+/* Boutons arrondis */
+ion-button {
+  --border-radius: 999px;
+  --box-shadow: 0 12px 36px rgba(59, 130, 246, 0.35);
+}
+
+ion-img {
+  border-radius: var(--app-border-radius-lg);
+}   

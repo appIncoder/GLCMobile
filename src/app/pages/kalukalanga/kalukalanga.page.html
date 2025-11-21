@@ -1,0 +1,24 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button (click)="logAndToggle($event)"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Mission Kalukalanga</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="home-page">
+  <div class="home-container">
+    <div class="home-shortcuts">
+      <ion-card button>
+        <ion-card-content>
+          <ion-img src="https://glcbaudour.be/wp-content/uploads/2024/12/WhatsApp-Image-2024-11-27-a-10.16.27_1a955f7a-1024x545.jpg" alt="Logo Kalukalanga" class="home-logo" />
+        </ion-card-content>
+      </ion-card>
+
+      <ion-button class="don-btn" color="primary" href="https://glcbaudour.be/mission-kalukalanga/">
+        Faire un don
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

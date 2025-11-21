@@ -26,7 +26,15 @@ loadChildren: () => import('./pages/ce-que-nous-croyons/ce-que-nous-croyons.modu
 
 
 // fallback
-{ path: '**', redirectTo: 'tabs/accueil' }
+{ path: '**', redirectTo: 'tabs/accueil' },
+  {
+    path: 'kalukalanga',
+    loadChildren: () => import('./pages/kalukalanga/kalukalanga.module').then( m => m.KalukalangaPageModule)
+  },
+  {
+    path: 'glcmedia',
+    loadChildren: () => import('./pages/glcmedia/glcmedia.module').then( m => m.GlcmediaPageModule)
+  }
 ];
 
 

@@ -7,6 +7,39 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <!-- Page vide Accueil -->
+<ion-content [fullscreen]="true" class="home-page">
+  <div class="home-container">
+    <div class="home-hero">
+      <ion-img src="assets/cropped-en-tete-2.png" alt="Logo du GLC Baudour" class="home-logo" />
+      <p class="home-subtitle">
+        Une place pour chacun, chacun à sa place
+      </p>
+    </div>
+
+    <div class="home-shortcuts">
+      <ion-card button>
+        <ion-card-content>
+          <ion-img src="https://glcbaudour.be/wp-content/uploads/2025/10/a333-1024x576.jpg" alt="Aperçu de la section 1" />
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card button>
+        <ion-card-content>         
+          <ion-img src="https://glcbaudour.be/wp-content/uploads/2025/10/coiffure201620920-1024x586.jpg" alt="Aperçu de la section 1" />
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card button>
+        <ion-card-content>         
+          <ion-img src="https://glcbaudour.be/wp-content/uploads/2025/10/marchedenoele-1024x611.jpg" alt="Aperçu de la section 1" />
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card button>
+        <ion-card-content>         
+          <ion-img src="https://glcbaudour.be/wp-content/uploads/2025/10/fete20de20noele-1024x611.jpg" alt="Aperçu de la section 1" />
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
 </ion-content>

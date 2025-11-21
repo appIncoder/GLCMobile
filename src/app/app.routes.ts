@@ -36,4 +36,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/nous-rejoindre/nous-rejoindre.page').then((m) => m.NousRejoindrePage),
   },
+    {
+    path: 'kalukalanga',
+    loadComponent: () =>
+      import('./pages/kalukalanga/kalukalanga.page').then((m) => m.KalukalangaPage),
+  },
+    {
+    path: 'glcmedia',
+    loadComponent: () =>
+      import('./pages/glcmedia/glcmedia.page').then((m) => m.GlcmediaPage),
+  },
 ];

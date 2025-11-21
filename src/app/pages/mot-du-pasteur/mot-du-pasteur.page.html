@@ -3,11 +3,45 @@
     <ion-buttons slot="start">
       <ion-menu-button (click)="logAndToggle($event)"></ion-menu-button>
     </ion-buttons>
-    <ion-title>Mot du Pasteur</ion-title>
+    <ion-title>Le mot du Pasteur</ion-title>
   </ion-toolbar>
 </ion-header>
 
+<ion-content [fullscreen]="true" class="home-page">
+  <div class="home-container">
+    <div class="home-shortcuts">
+      <ion-card button>
+        <ion-card-header>
+          <ion-card-title>“L’avenir sera aussi grandiose que les promesses de Dieu” (William Carey)</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-img src="assets/carrozzo.png" alt="Photo du pasteur" class="home-logo" />
+        </ion-card-content>
+      </ion-card>
 
-<ion-content class="ion-padding">
-<!-- Page vide Mot du pasteur -->
+      <ion-card button>
+        <ion-card-content>  
+          <div>
+            Cette parole d’un missionnaire Anglais du 18ème s. a été pour moi comme une révélation qui me disait qu’avec Dieu le meilleur est à venir, il est toujours devant, prêt à s’accomplir, parce que Dieu est fidèle à sa Parole.<br>
+            <br>
+            L’homme peut vivre 30 jours sans manger, il peut vivre 3 jours sans boire, il peut vivre quelques minutes sans respirer, mais il ne peut vivre un seul instant sans espérer!
+            Le constat est universel, il existe dans le cœur de l’homme un vide qui le fait désespérer! Pourtant ce n’est pas ce que Dieu désire pour sa création.
+            La Bible déclare que Dieu a des projets de paix et de bonheur afin de nous donner un avenir et de l’espérance.
+            <br>
+
+            C’est précisément ce dont nous avons le plus besoin, un avenir assuré et une réelle espérance, une ouverture vers tous les possibles
+            Un regard positif dans un univers rempli de négativisme, n’est possible qu’en découvrant l’amour et la puissance de Dieu
+            <br>
+
+            Alors, espoir ou désespoir ?
+            Jésus dit: Je suis le chemin, la vérité et la vie (Jean 14: 6)
+            <br><br>
+            Ma prière pour vous lecteurs est qu’à travers une rencontre personnelle avec Jésus-Christ, vous puissiez donner un coup mortel au désespoir et découvrir les merveilleuses promesses de Dieu révélées pour être connectés à celui qui est la vie, Jésus!
+            <br><br>
+            Pasteur Giuseppe Carrozzo
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
 </ion-content>
