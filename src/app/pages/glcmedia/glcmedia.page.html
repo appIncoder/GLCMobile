@@ -8,9 +8,44 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="home-page">
-  <div class="home-container">
-    <div class="home-shortcuts">
-      Lorem ipsum
+  <div class="home-container media-container">
+
+    <div class="media-intro">
+      Retrouvez ici les 10 dernières vidéos publiées sur la chaîne YouTube du
+      GLC Baudour.
     </div>
+
+    <!-- États de chargement / erreur -->
+    <div class="media-state" *ngIf="isLoading">
+      Chargement des vidéos…
+    </div>
+
+    <div class="media-state error" *ngIf="!isLoading && error">
+      {{ error }}
+    </div>
+
+    <!-- Liste des vidéos -->
+    <div class="video-list" *ngIf="!isLoading && !error">
+      <ion-card
+        class="video-card"
+        *ngFor="let video of videos"
+        button
+        [href]="video.link"
+        target="_blank"
+      >
+        <ion-img
+          [src]="video.thumbnailUrl"
+          [alt]="video.title"
+          class="video-thumbnail"
+        ></ion-img>
+
+        <ion-card-content>
+          <h2 class="video-title">
+            {{ video.title }}
+          </h2>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
   </div>
 </ion-content>

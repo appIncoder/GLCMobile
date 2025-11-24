@@ -23,7 +23,7 @@ export class AppComponent {
   public appPages = [
     { title: 'Accueil', url: '/accueil', icon: 'home' },
     { title: 'Le Pasteur', url: '/pasteur', icon: 'paper-plane' }, 
-    { title: 'A venir', url: '/avenir', icon: 'heart' },
+    { title: 'Nos activités', url: '/avenir', icon: 'heart' },
     { title: 'Agenda GLC', url: '/agenda', icon: 'archive' },
     { title: 'Ce que nous croyons', url: '/nouscroyons', icon: 'trash' },
     { title: 'Mission Kalukalanga', url: '/kalukalanga', icon: 'people' },

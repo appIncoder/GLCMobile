@@ -1,13 +1,120 @@
-<ion-header>
-<ion-toolbar>
-<ion-buttons slot="start">
-<ion-menu-button></ion-menu-button>
-</ion-buttons>
-<ion-title>Agenda</ion-title>
-</ion-toolbar>
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button (click)="logAndToggle($event)"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Agenda</ion-title>
+  </ion-toolbar>
 </ion-header>
 
+<ion-content [fullscreen]="true" class="agenda-page">
+  <div class="calendar-wrapper">
 
-<ion-content class="ion-padding">
-<!-- Page vide Agenda -->
+    <!-- Barre de navigation mois -->
+    <div class="calendar-header">
+      <button class="nav-btn" (click)="prevMonth()">
+        ‹
+      </button>
+
+      <div class="month-label">
+        {{ monthLabel | titlecase }}
+      </div>
+
+      <button class="nav-btn" (click)="nextMonth()">
+        ›
+      </button>
+    </div>
+
+    <!-- Jours de la semaine -->
+    <div class="weekday-row">
+      <div class="weekday" *ngFor="let day of weekdayNames">
+        {{ day }}
+      </div>
+    </div>
+
+    <!-- Grille mensuelle -->
+    <div class="calendar-grid">
+      <div
+        class="day-cell"
+        *ngFor="let day of days"
+        [class.outside]="!day.inCurrentMonth"
+        [class.today]="day.isToday"
+        [class.no-events]="!day.events.length"
+        (click)="openDayDetails(day)"
+      >
+        <div class="day-number">
+          {{ day.date.getDate() }}
+        </div>
+
+        <div class="events">
+          <div
+            class="event-pill"
+            *ngFor="let ev of day.events | slice:0:3"
+            [style.background]="ev.color || '#3b82f6'"
+          >
+            {{ ev.title }}
+          </div>
+
+          <div class="more-events" *ngIf="day.events.length > 3">
+            +{{ day.events.length - 3 }} autres
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ion-modal
+  [isOpen]="isDayModalOpen"
+  (didDismiss)="closeDayDetails()"
+  [breakpoints]="[0, 0.35, 0.7]"
+  [initialBreakpoint]="0.35"
+  handleBehavior="cycle"
+>
+  <ng-template>
+    <ion-content class="day-modal">
+      <div class="day-modal-handle"></div>
+
+      <ion-card class="day-card">
+        <ion-card-header>
+          <ion-card-title class="day-modal-date">
+            {{ selectedDayLabel | titlecase }}
+          </ion-card-title>
+          <ion-card-subtitle>
+            <ion-button fill="clear" size="small" (click)="closeDayDetails()">
+              Fermer
+            </ion-button>
+          </ion-card-subtitle>
+        </ion-card-header>
+
+        <ion-card-content>
+
+          <div *ngIf="selectedDay?.events?.length; else noEvents">
+            <ion-list>
+              <ion-item *ngFor="let ev of selectedDay?.events">
+                <div
+                  class="event-color-dot"
+                  [style.background]="ev.color || '#3b82f6'"
+                ></div>
+
+                <ion-label>
+                  <h2>{{ ev.title }}</h2>
+                  <p *ngIf="ev.description">{{ ev.description }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </div>
+
+          <ng-template #noEvents>
+            <div class="day-modal-empty">
+              Aucun événement pour ce jour.
+            </div>
+          </ng-template>
+
+        </ion-card-content>
+      </ion-card>
+
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
 </ion-content>
