@@ -1,0 +1,50 @@
+.nous-rejoindre-page {
+  --background: #000; // si tu restes sur ton thème fond noir
+}
+
+.page-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+ion-card {
+  border-radius: 16px;
+}
+
+.info-card h2 {
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.info-card p {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+}
+
+.info-block + .info-block {
+  margin-top: 8px;
+}
+
+.map-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; // ratio 16/9
+
+  iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 12px;
+  }
+}
+
+@media (min-width: 768px) {
+  .page-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+}

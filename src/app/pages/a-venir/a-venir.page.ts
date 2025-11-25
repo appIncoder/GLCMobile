@@ -3,10 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, MenuController } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
+import { addIcons } from 'ionicons';
+import { notificationsOutline, notificationsSharp } from 'ionicons/icons';
+
 
 interface Activity {
   id: number;
   name: string;
+  description: string;
   schedule: string;      // jours + heures
   responsible: string;   // personne responsable
   phone: string;         // numéro de téléphone
@@ -22,13 +26,16 @@ interface Activity {
 })
 export class AVenirPage implements OnInit {
 
-  constructor(private menuCtrl: MenuController) {}
+  constructor(private menuCtrl: MenuController) {
+        addIcons({ notificationsOutline, notificationsSharp });
+  }
 
   // Liste mock d’activités du GLC Baudour
   activities: Activity[] = [
     {
       id: 1,
       name: 'Culte dominical',
+      description: 'Culte hebdomadaire avec enseignement, louange et prière.',
       schedule: 'Tous les dimanches · 10h00 – 12h00',
       responsible: 'Pasteur Jean Dupont',
       phone: '+32 471 23 45 67',
@@ -37,6 +44,7 @@ export class AVenirPage implements OnInit {
     {
       id: 2,
       name: 'Réunion de prière',
+      description: 'Temps de prière communautaire pour le GLC Baudour.',
       schedule: 'Tous les mardis · 19h30 – 21h00',
       responsible: 'Soeur Marie Martin',
       phone: '+32 496 11 22 33',
@@ -45,6 +53,7 @@ export class AVenirPage implements OnInit {
     {
       id: 3,
       name: 'Réunion de jeunes',
+      description: 'Activités et enseignements pour les jeunes du GLC Baudour.',
       schedule: 'Tous les samedis · 18h00 – 20h00',
       responsible: 'Frère David Lambert',
       phone: '+32 488 55 66 77',
@@ -53,6 +62,7 @@ export class AVenirPage implements OnInit {
     {
       id: 4,
       name: 'Étude biblique',
+      description: 'Étude approfondie des textes bibliques pour mieux comprendre la foi.',
       schedule: 'Tous les jeudis · 19h30 – 21h00',
       responsible: 'Frère Paul Leroy',
       phone: '+32 472 90 12 34',
@@ -61,6 +71,7 @@ export class AVenirPage implements OnInit {
     {
       id: 5,
       name: 'Répétition de louange',
+      description: 'Réunion pour préparer les chants et la musique de louange.',
       schedule: 'Un vendredi sur deux · 20h00 – 22h00',
       responsible: 'Soeur Anna Moreau',
       phone: '+32 489 33 44 55',
