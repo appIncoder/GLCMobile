@@ -7,25 +7,26 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="home-page">
-  <div class="home-container media-container">
+<ion-content [fullscreen]="true" class="glcmedia-page">
+  <div class="media-container">
 
     <div class="media-intro">
-      Retrouvez ici les 10 dernières vidéos publiées sur la chaîne YouTube du
+      Retrouvez ici les dernières vidéos publiées sur la chaîne YouTube du
       GLC Baudour.
     </div>
 
-    <!-- États de chargement / erreur -->
-    <div class="media-state" *ngIf="isLoading">
+    <!-- État de chargement -->
+    <div *ngIf="isLoading" class="media-state">
       Chargement des vidéos…
     </div>
 
-    <div class="media-state error" *ngIf="!isLoading && error">
+    <!-- Erreur -->
+    <div *ngIf="!isLoading && error" class="media-state error">
       {{ error }}
     </div>
 
     <!-- Liste des vidéos -->
-    <div class="video-list" *ngIf="!isLoading && !error">
+    <div *ngIf="!isLoading && !error" class="video-list">
       <ion-card
         class="video-card"
         *ngFor="let video of videos"
@@ -34,16 +35,19 @@
         target="_blank"
       >
         <ion-img
+          class="video-thumbnail"
           [src]="video.thumbnailUrl"
           [alt]="video.title"
-          class="video-thumbnail"
         ></ion-img>
 
         <ion-card-content>
-          <h2 class="video-title">
-            {{ video.title }}
-          </h2>
-        </ion-card-content>
+  <div class="video-hea_der">
+    <h2 class="video-title">{{ video.title }}</h2>
+    <p class="video-date w-100">
+      {{ video.publishedAt | date: 'longDate' }}
+    </p>
+  </div>
+</ion-card-content>
       </ion-card>
     </div>
 

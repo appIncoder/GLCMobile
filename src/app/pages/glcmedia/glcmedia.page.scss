@@ -1,17 +1,22 @@
+.glcmedia-page {
+  --background: #000;
+}
+
 .media-container {
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .media-intro {
   font-size: 0.9rem;
   color: #9ca3af;
-  margin-bottom: 12px;
 }
 
 .media-state {
   font-size: 0.9rem;
   color: #e5e7eb;
-  margin: 16px 0;
 
   &.error {
     color: #f97373;
@@ -28,17 +33,19 @@
   margin: 0;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: stretch;
   background: rgba(255, 255, 255, 0.06);
-  border-radius: var(--app-radius-lg, 16px);
+  border-radius: 16px;
   overflow: hidden;
 }
 
 .video-thumbnail {
-  width: 140px;
-  height: 80px;
+
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;   /* Format YouTube */
   object-fit: cover;
-  flex-shrink: 0;
+  display: block;
 }
 
 ion-card-content {
@@ -49,4 +56,11 @@ ion-card-content {
   font-size: 0.9rem;
   font-weight: 500;
   color: #f9fafb;
+  margin-bottom: 4px;
+}
+
+.video-date {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  text-align: right;
 }
