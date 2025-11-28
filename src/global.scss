@@ -34,4 +34,11 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+@import '@ionic/angular/css/palettes/dark.system.css';
+
+/* Safe Area - Fix for Android status bar overlap */
+ion-header {
+  padding-top: max(0px, env(safe-area-inset-top));
+  padding-left: max(0px, env(safe-area-inset-left));
+  padding-right: max(0px, env(safe-area-inset-right));
+}

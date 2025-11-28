@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule, MenuController } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { IonHeader, IonToolbar, IonButtons, 
+  IonMenuButton, IonTitle, IonContent,
+  IonItem, IonLabel, IonList, IonCardContent, IonButton,
+IonCardSubtitle, IonCardTitle, IonCardHeader, IonCard,
+IonModal   } from '@ionic/angular/standalone';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 
 interface CalendarEvent {
   date: string; // format 'YYYY-MM-DD'
@@ -19,19 +22,22 @@ interface CalendarDay {
 }
 
 @Component({
-  selector: 'app-a',
-  standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, RouterModule],
+  selector: 'app-agenda',
   templateUrl: './agenda.page.html',
   styleUrls: ['./agenda.page.scss'],
+  standalone: true,
+  imports: [CommonModule, IonHeader, IonToolbar, IonButtons, 
+    IonMenuButton, IonTitle, IonContent, 
+    IonItem, IonLabel, IonList, IonCardContent, IonButton, 
+    IonCardSubtitle, IonCardTitle, IonCardHeader, IonCard, 
+    IonModal, TitleCasePipe],
 })
 export class AgendaPage implements OnInit {
+  public folder!: string;
+  private activatedRoute = inject(ActivatedRoute);
+  constructor() {}
 
-  constructor(private menuCtrl: MenuController) {}
-
-  // ====== LOGIQUE AGENDA ======
-
-  currentDate = new Date();
+currentDate = new Date();
   currentMonth!: number;
   currentYear!: number;
 
@@ -150,17 +156,6 @@ export class AgendaPage implements OnInit {
 
   closeDayDetails() {
     this.isDayModalOpen = false;
-  }
-
-  // ====== MENU BURGER ======
-
-  async logAndToggle(ev?: Event) {
-    try {
-      await this.menuCtrl.enable(true, 'main-menu');
-      const res = await this.menuCtrl.toggle('main-menu');
-    } catch (err) {
-      console.error('[Accueil] menu toggle error:', err);
-    }
   }
 
 }

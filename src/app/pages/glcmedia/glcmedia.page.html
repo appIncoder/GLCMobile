@@ -1,9 +1,9 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button (click)="logAndToggle($event)"></ion-menu-button>
+      <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Le GLC Media</ion-title>
+    <ion-title>GLC Media</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -31,8 +31,7 @@
         class="video-card"
         *ngFor="let video of videos"
         button
-        [href]="video.link"
-        target="_blank"
+        (click)="openVideoPlayer(video)"
       >
         <ion-img
           class="video-thumbnail"
@@ -52,4 +51,35 @@
     </div>
 
   </div>
+
+  <!-- Video Player Modal -->
+  <ion-modal
+    [isOpen]="isVideoModalOpen"
+    (didDismiss)="closeVideoPlayer()"
+    [breakpoints]="[0, 0.5, 1]"
+    [initialBreakpoint]="1"
+    handleBehavior="cycle"
+  >
+    <ng-template>
+      <ion-content class="video-player-modal">
+        <div class="video-player-header">
+          <h2>{{ selectedVideo?.title }}</h2>
+          <ion-button fill="clear" (click)="closeVideoPlayer()">
+            Fermer
+          </ion-button>
+        </div>
+
+        <div class="video-player-container" *ngIf="selectedVideo?.embedUrl">
+          <iframe
+            [src]="selectedVideo?.embedUrl"
+            width="100%"
+            height="315"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

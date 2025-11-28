@@ -1,49 +1,51 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { IonHeader, IonToolbar, IonButtons, IonMenuButton, 
+  IonTitle, IonContent,
+  IonCardContent, IonImg, IonCard, IonModal, IonButton } from '@ionic/angular/standalone';
+
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule, MenuController } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { DatePipe } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 export interface YoutubeVideo {
   title: string;
   link: string;
   thumbnailUrl: string;
   publishedAt: string;
+  embedUrl?: SafeResourceUrl;
 }
 
 @Component({
   selector: 'app-glcmedia',
-  standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, RouterModule, HttpClientModule],
   templateUrl: './glcmedia.page.html',
   styleUrls: ['./glcmedia.page.scss'],
+  standalone: true,
+  imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, 
+    IonTitle, IonContent, IonCardContent, IonImg, IonCard, IonModal, IonButton,
+  DatePipe, CommonModule],
 })
 export class GlcmediaPage implements OnInit {
+  public folder!: string;
+  private activatedRoute = inject(ActivatedRoute);
 
   videos: YoutubeVideo[] = [];
   isLoading = false;
   error: string | null = null;
+  isVideoModalOpen = false;
+  selectedVideo: YoutubeVideo | null = null;
 
   // URL exacte de ton script PHP
   private readonly apiUrl = 'https://glcbaudour.be/api/glc-videos.php';
 
   constructor(
-    private menuCtrl: MenuController,
-    private http: HttpClient
+    private http: HttpClient,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
     this.loadVideos();
-  }
-
-  async logAndToggle(ev?: Event) {
-    try {
-      await this.menuCtrl.enable(true, 'main-menu');
-      await this.menuCtrl.toggle('main-menu');
-    } catch (err) {
-      console.error('[GLCMedia] menu toggle error:', err);
-    }
   }
 
   loadVideos(): void {
@@ -77,11 +79,13 @@ export class GlcmediaPage implements OnInit {
             ) ||
             '';
 
+          const embedUrl = this.extractYoutubeEmbedUrl(item.link ?? '');
           const video: YoutubeVideo = {
             title: item.title ?? '',
             link: item.link ?? '',
             thumbnailUrl: fallback as string,
             publishedAt: item.publishedAt ?? item.published_at ?? '',
+            embedUrl: embedUrl,
           };
 
           return video;
@@ -96,4 +100,33 @@ export class GlcmediaPage implements OnInit {
       },
     });
   }
+
+  private extractYoutubeEmbedUrl(url: string): SafeResourceUrl {
+    let videoId = '';
+    
+    if (url.includes('youtube.com/watch')) {
+      videoId = new URL(url).searchParams.get('v') || '';
+    } else if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1]?.split('?')[0] || '';
+    }
+    
+    if (videoId) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl(
+        `https://www.youtube.com/embed/${videoId}?autoplay=1`
+      );
+    }
+    return this.sanitizer.bypassSecurityTrustResourceUrl('');
+  }
+
+  openVideoPlayer(video: YoutubeVideo) {
+    this.selectedVideo = video;
+    this.isVideoModalOpen = true;
+  }
+
+  closeVideoPlayer() {
+    this.isVideoModalOpen = false;
+    this.selectedVideo = null;
+  }
+
 }
+  

@@ -1,10 +1,19 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-appId: 'mobile.app.glcbaudour.be', // ID de package demandé
-appName: 'GLC App', // Nom de l’application
-webDir: 'www',
-bundledWebRuntime: false,
+  appId: 'mobile.app.glcbaudour.be',
+  appName: 'GLC Baudour',
+  webDir: 'www',
+  plugins: {
+    StatusBar: {
+      style: 'DARK',
+      backgroundColor: '#ffffff',
+      overlaysWebView: false,
+    },
+    SafeArea: {
+      customColorsForSystemBars: true,
+    },
+  },
 };
 
 export default config;

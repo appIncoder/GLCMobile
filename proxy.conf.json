@@ -1,0 +1,11 @@
+{
+  "/api": {
+    "target": "https://glcbaudour.be",
+    "pathRewrite": {
+      "^/api": "/api"
+    },
+    "changeOrigin": true,
+    "secure": false,
+    "logLevel": "debug"
+  }
+}

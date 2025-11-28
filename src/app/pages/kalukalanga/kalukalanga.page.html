@@ -1,9 +1,9 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button (click)="logAndToggle($event)"></ion-menu-button>
+      <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Mission Kalukalanga</ion-title>
+    <ion-title>Kalukalanga</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -16,9 +16,106 @@
         </ion-card-content>
       </ion-card>
 
-      <ion-button class="don-btn" color="primary" href="https://glcbaudour.be/mission-kalukalanga/">
+      <ion-card>
+        <ion-card-content>
+          <p>
+            Kalukalanga est une mission chrétienne œuvrant pour l'amélioration de la qualité de vie des populations locales. 
+            Notre engagement combine éducation, santé et développement communautaire. Nous croyons à la force transformatrice 
+            de l'Évangile pour créer un impact durable dans les villages que nous servons. Rejoignez-nous dans cette belle aventure.
+          </p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-button class="don-btn" color="primary" (click)="openPaymentModal()">
         Faire un don
       </ion-button>
     </div>
   </div>
+
+  <!-- Payment Modal -->
+  <ion-modal
+    [isOpen]="isPaymentModalOpen"
+    (didDismiss)="closePaymentModal()"
+  >
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Paiement Sécurisé</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closePaymentModal()">Fermer</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="payment-modal">
+        <ion-card>
+          <ion-card-content>
+            <!-- Step 1: Amount Selection -->
+            <div *ngIf="!paymentErrorMessage && !paymentSuccessMessage && !selectedAmount">
+              <p class="payment-description">Sélectionnez un montant pour faire un don à Kalukalanga</p>
+
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="6" *ngFor="let option of paymentOptions">
+                    <ion-button
+                      [fill]="selectedAmount === option.amount ? 'solid' : 'outline'"
+                      [color]="selectedAmount === option.amount ? 'primary' : 'medium'"
+                      expand="block"
+                      (click)="selectAmount(option.amount)"
+                      class="payment-option-btn"
+                    >
+                      {{ option.label }}
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
+              <ion-button
+                expand="block"
+                color="primary"
+                [disabled]="!selectedAmount"
+                (click)="processPayment()"
+                class="payment-submit-btn"
+              >
+                Continuer
+              </ion-button>
+            </div>
+
+            <!-- Step 2: Card Payment Form -->
+            <div *ngIf="selectedAmount && !paymentSuccessMessage">
+              <div class="amount-display">
+                <p class="amount-label">Montant à payer</p>
+                <p class="amount-value">€{{ selectedAmount }}.00</p>
+              </div>
+
+              <app-stripe-card-form 
+                [amount]="selectedAmount"
+                (paymentSubmit)="handleCardPayment($event)"
+              ></app-stripe-card-form>
+
+              <!-- Error Message -->
+              <div *ngIf="paymentErrorMessage" class="error-box">
+                <p>{{ paymentErrorMessage }}</p>
+                <ion-button
+                  expand="block"
+                  fill="outline"
+                  color="medium"
+                  (click)="selectedAmount = null"
+                  size="small"
+                >
+                  Retour
+                </ion-button>
+              </div>
+            </div>
+
+            <!-- Success Message -->
+            <div *ngIf="paymentSuccessMessage" class="success-box">
+              <p class="success-icon">✓</p>
+              <p class="success-message">{{ paymentSuccessMessage }}</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

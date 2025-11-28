@@ -1,67 +1,82 @@
+// For information on how to create your own theme, please refer to:
+// https://ionicframework.com/docs/theming/
+
+// Set background color to black
 :root {
-  /** Couleurs de base **/
   --ion-background-color: #000000;
   --ion-background-color-rgb: 0, 0, 0;
-  --ion-card-background-color: #000000;
-
-  --ion-text-color: #f5f5f5;
-  --ion-card-text-color: #f5f5f5;
-  --ion-text-color-rgb: 245, 245, 245;
-
-  /** Couleur d’accent **/
-  --ion-color-primary: #3b82f6;
-  --ion-color-primary-rgb: 59, 130, 246;
-  --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #2563eb;
-  --ion-color-primary-tint: #60a5fa;
-
-  /** Couleurs secondaires **/
-  --ion-color-medium: #9ca3af;
-  --ion-color-light: #1f2937;
-
-  /** Surfaces **/
-  --ion-card-background: #111111;
-  --ion-item-background: #111111;
-
-  /** Styles **/
-  --app-border-radius-lg: 18px;
-  --app-border-radius-md: 12px;
-  --app-shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.6);
+  
+  // Set text color to white for better contrast
+  --ion-text-color: #ffffff;
+  --ion-text-color-rgb: 255, 255, 255;
+  
+  // Set heading color to white
+  --ion-heading-color: #ffffff;
+  
+  // Set color for various text elements
+  --ion-color-step-50: #f2f2f2;
+  --ion-color-step-100: #e6e6e6;
+  --ion-color-step-150: #d9d9d9;
+  --ion-color-step-200: #cccccc;
+  --ion-color-step-250: #bfbfbf;
+  --ion-color-step-300: #b3b3b3;
+  --ion-color-step-350: #a6a6a6;
+  --ion-color-step-400: #999999;
+  --ion-color-step-450: #8c8c8c;
+  --ion-color-step-500: #808080;
+  --ion-color-step-550: #737373;
+  --ion-color-step-600: #666666;
+  --ion-color-step-650: #595959;
+  --ion-color-step-700: #4d4d4d;
+  --ion-color-step-750: #404040;
+  --ion-color-step-800: #333333;
+  --ion-color-step-850: #262626;
+  --ion-color-step-900: #1a1a1a;
 }
 
-/* Applique le fond noir global */
-ion-app,
+// Override content background and text
 ion-content {
-  --background: var(--ion-background-color);
+  --background: #000000;
+  --color: #ffffff;
 }
 
-/* Toolbar noire & épurée */
-ion-toolbar {
-  --background: #000;
-  --border-color: transparent;
-  --color: var(--ion-text-color);
+// Ensure labels and text are white
+ion-label {
+  color: #ffffff;
 }
 
-/* Cards sur fond noir */
+// Ensure card content has white text
+ion-card-content {
+  color: #ffffff;
+}
+
+// Style ion-card with black background and white border
 ion-card {
-  background: var(--ion-card-background-color) !important;
-  border-radius: var(--app-border-radius-lg);
-  box-shadow: var(--app-shadow-soft);
-  color: var(--ion-card-text-color);
-  border-style: solid;
-  border-color: white;
+  --background: #000000;
+  border: 1px solid #ffffff;
 }
 
+ion-card-header {
+  --background: #000000;
+}
+
+// Style ion-card-title with white color
 ion-card-title {
-  color: var(--ion-text-color);
-}
-/* Boutons arrondis */
-ion-button {
-  --border-radius: 999px;
-  --box-shadow: 0 12px 36px rgba(59, 130, 246, 0.35);
+  color: #ffffff;
 }
 
-ion-img {
-  border-radius: var(--app-border-radius-lg);
-}   
+// Style ion-button with black background and white border
+ion-button {
+  --background: rgba(0, 0, 0, 0.5);
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: #ffffff;
+  --color: #ffffff;
+  
+  &.don-btn {
+    display: block;
+    width: 50vw;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

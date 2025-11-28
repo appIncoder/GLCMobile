@@ -1,32 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule, MenuController } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { IonHeader, IonToolbar, IonButtons, 
+  IonMenuButton, IonTitle, IonContent, 
+  IonImg, IonCard, IonCardContent } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-accueil',
-  standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, RouterModule],
   templateUrl: './accueil.page.html',
   styleUrls: ['./accueil.page.scss'],
+  standalone: true,
+  imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonImg, IonCard, IonCardContent],
 })
 export class AccueilPage implements OnInit {
+  public folder!: string;
+  private activatedRoute = inject(ActivatedRoute);
+  constructor() {}
 
-  constructor(private menuCtrl: MenuController) {}
-
-  ngOnInit() { }
-
-  async logAndToggle(ev?: Event) {
-    try {
-      // On s’assure que le menu avec l’ID 'main-menu' est bien activé
-      await this.menuCtrl.enable(true, 'main-menu');
-
-      // On toggle explicitement ce menu
-      const res = await this.menuCtrl.toggle('main-menu');
-    } catch (err) {
-      console.error('[Accueil] menu toggle error:', err);
-    }
+  ngOnInit() {
+    this.folder = this.activatedRoute.snapshot.paramMap.get('id') as string;
   }
-
 }

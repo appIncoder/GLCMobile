@@ -1,17 +1,20 @@
 
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
+import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, 
+  IonListHeader, IonMenuToggle, IonItem, IonIcon, 
+  IonLabel, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { mailOutline, mailSharp, 
-        paperPlaneOutline, paperPlaneSharp, 
-        heartOutline, heartSharp, 
-        archiveOutline, archiveSharp, 
-        trashOutline, trashSharp, 
-        warningOutline, warningSharp, 
-        bookmarkOutline, bookmarkSharp, 
-        peopleOutline, peopleSharp,
-        homeOutline, homeSharp } from 'ionicons/icons';
+import { h } from 'ionicons/dist/types/stencil-public-runtime';
+import { 
+  archiveOutline, archiveSharp, 
+  homeOutline, homeSharp,
+  manOutline, manSharp,
+  calendarOutline, calendarSharp,
+  heartHalfOutline, heartHalfSharp,
+  videocamOutline, videocamSharp,
+  peopleOutline, peopleSharp,
+  handLeftOutline, handLeftSharp } from 'ionicons/icons';
 
 @Component({
   selector: 'app-root',
@@ -22,20 +25,23 @@ import { mailOutline, mailSharp,
 export class AppComponent {
   public appPages = [
     { title: 'Accueil', url: '/accueil', icon: 'home' },
-    { title: 'Le Pasteur', url: '/pasteur', icon: 'paper-plane' }, 
-    { title: 'Nos activités', url: '/avenir', icon: 'heart' },
-    { title: 'Agenda GLC', url: '/agenda', icon: 'archive' },
-    { title: 'Ce que nous croyons', url: '/nouscroyons', icon: 'trash' },
-    { title: 'Mission Kalukalanga', url: '/kalukalanga', icon: 'people' },
-    { title: 'GLC Media', url: '/glcmedia', icon: 'people' },
-    { title: 'Pour nous rejoindre', url: '/nousrejoindre', icon: 'people' },
+    { title: 'Pasteur', url: '/pasteur', icon: 'man' },
+    { title: 'Agenda', url: '/agenda', icon: 'calendar' },
+    { title: 'Activités', url: '/activites', icon: 'archive' },
+    { title: 'Kalukalanga', url: '/kalukalanga', icon: 'heart-half' },
+    { title: 'GLC Media', url: '/glcmedia', icon: 'videocam' },
+    { title: 'Nous rejoindre', url: '/nousjoindre', icon: 'people' },
   ];
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   constructor() {
-    addIcons({ mailOutline, 
-      mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, 
-      heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, 
-      warningOutline, warningSharp, bookmarkOutline, bookmarkSharp, 
-      peopleOutline,peopleSharp, homeOutline, homeSharp });
+    addIcons({ 
+      archiveOutline, archiveSharp, 
+      homeOutline, homeSharp,
+      manOutline, manSharp,
+      calendarOutline, calendarSharp,
+      heartHalfOutline, heartHalfSharp,
+      videocamOutline, videocamSharp,
+      peopleOutline, peopleSharp,
+      handLeftOutline, handLeftSharp });
   }
 }

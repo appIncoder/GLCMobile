@@ -1,0 +1,228 @@
+.soutenir-container {
+  padding: 16px;
+}
+
+.soutenir-logo {
+  width: 100%;
+  height: auto;
+}
+
+.payment-description {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.payment-option-btn {
+  margin-bottom: 8px;
+}
+
+.banking-apps-section {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.banking-apps-title {
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.banking-app-btn {
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.payment-submit-btn {
+  margin-top: 20px;
+}
+
+// Discovery Modal Styles
+.discovery-modal {
+  padding: 0;
+}
+
+.discovery-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  min-height: 300px;
+}
+
+.discovery-loading ion-spinner {
+  margin-bottom: 20px;
+  width: 60px;
+  height: 60px;
+}
+
+.discovery-text {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #ffffff;
+}
+
+.discovery-amount {
+  font-size: 14px;
+  color: #cccccc;
+  margin-bottom: 0;
+}
+
+.discovery-results {
+  padding: 10px 0;
+}
+
+.discovery-title {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.discovery-instruction {
+  font-size: 13px;
+  text-align: center;
+  color: #cccccc;
+  margin-bottom: 20px;
+}
+
+.detected-app-btn {
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.app-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 12px;
+}
+
+.app-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.app-label {
+  flex: 1;
+  text-align: left;
+}
+
+.no-apps-found {
+  padding: 20px 0;
+  text-align: center;
+}
+
+.warning-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ff6b6b;
+  margin-bottom: 10px;
+}
+
+.info-text {
+  font-size: 14px;
+  color: #cccccc;
+  margin-bottom: 15px;
+}
+
+.app-name {
+  font-size: 13px;
+  color: #ffffff;
+  margin: 8px 0;
+  text-align: left;
+  padding-left: 20px;
+}
+
+.close-btn {
+  margin-top: 20px;
+}
+
+// Embedded Stripe Payment Styles
+.amount-display {
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.amount-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 8px 0;
+}
+
+.amount-value {
+  font-size: 36px;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 0;
+}
+
+.error-box {
+  padding: 16px;
+  background-color: rgba(255, 76, 76, 0.1);
+  border: 1px solid #ff4c4c;
+  border-radius: 8px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.error-box p {
+  color: #ff4c4c;
+  margin: 0 0 12px 0;
+  font-size: 14px;
+}
+
+.success-box {
+  text-align: center;
+  padding: 40px 20px;
+  animation: slideInUp 0.3s ease-out;
+}
+
+.success-icon {
+  font-size: 64px;
+  margin: 0 0 16px 0;
+  display: inline-block;
+  animation: scaleIn 0.4s ease-out;
+}
+
+.success-message {
+  font-size: 18px;
+  font-weight: 600;
+  color: #4caf50;
+  margin: 0;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

@@ -3,7 +3,8 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  apiUrl: 'https://glcbaudour.be/api'  // Use local proxy during development (proxy.conf.json redirects this to https://glcbaudour.be/api)
 };
 
 /*

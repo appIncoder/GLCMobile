@@ -1,7 +1,7 @@
 {
-  "name": "glc-app",
+  "name": "GLC Baudour",
   "integrations": {
     "capacitor": {}
   },
-  "type": "angular"
+  "type": "angular-standalone"
 }
