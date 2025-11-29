@@ -1,0 +1,51 @@
+.activity-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Image d’en-tête */
+.activity-card-header-img {
+  height: 120px; /* hauteur du bandeau image */
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* Flou superposé */
+.img-blur-overlay {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.25); /* léger assombrissement */
+}
+
+/* Contenu */
+.activity-card-content {
+  padding: 0;
+}
+
+.activity-card-overlay {
+  padding: 16px;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(2px);
+}
+
+.activity-name {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.activity-description {
+  color: #ddd;
+  font-size: 12px;
+}
+
+.activity-notif-icon {
+  color: var(--ion-color-warning);
+  font-size: 24px;
+}

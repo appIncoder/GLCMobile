@@ -20,17 +20,28 @@
       *ngFor="let activity of activities"
       (click)="openActivityDetails(activity)"
     >
-      <ion-card-content class="activity-card-content">
-        <div class="activity-name">
-          {{ activity.name }}<br />
-          {{ activity.description }}
-        </div>
+      <!-- Fond flou avec image spécifique à chaque activité -->
+      <div
+        class="activity-card-bg"
+        [style.background-image]="'url(' + activity.image + ')'"
+      ></div>
 
-        <ion-icon
-          *ngIf="activity.planned"
-          name="notifications-outline"
-          class="activity-notif-icon"
-        ></ion-icon>
+      <ion-card-content class="activity-card-content">
+        <div class="activity-card-overlay">
+          <div class="activity-name">
+            {{ activity.name }}<br />
+            <span class="activity-description">
+              {{ activity.description }}
+            </span>
+          </div>
+
+          <!-- Cloche à droite si activité planifiée -->
+          <ion-icon
+            *ngIf="activity.planned"
+            name="notifications-outline"
+            class="activity-notif-icon"
+          ></ion-icon>
+        </div>
       </ion-card-content>
     </ion-card>
   </div>
