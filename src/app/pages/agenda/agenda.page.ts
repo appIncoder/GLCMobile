@@ -1,17 +1,38 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { IonHeader, IonToolbar, IonButtons, 
-  IonMenuButton, IonTitle, IonContent,
-  IonItem, IonLabel, IonList, IonCardContent, IonButton,
-IonCardSubtitle, IonCardTitle, IonCardHeader, IonCard,
-IonModal   } from '@ionic/angular/standalone';
-import { CommonModule, TitleCasePipe } from '@angular/common';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonMenuButton,
+  IonTitle,
+  IonContent,
+  IonModal,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonCardContent,
+  IonButton,
+  IonList,
+  IonItem,
+  IonLabel,
+} from '@ionic/angular/standalone';
+import { Gesture, GestureController } from '@ionic/angular';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 interface CalendarEvent {
-  date: string; // format 'YYYY-MM-DD'
   title: string;
-  color?: string;
   description?: string;
+  color?: string;
+  date: Date;
 }
 
 interface CalendarDay {
@@ -21,141 +42,287 @@ interface CalendarDay {
   events: CalendarEvent[];
 }
 
+/**
+ * Structure attendue depuis l'API /api/agenda
+ * (à adapter en fonction de ton backend réel)
+ */
+interface AgendaApiItem {
+  title: string;
+  description?: string;
+  color?: string;
+  date: string; // ISO string ou 'YYYY-MM-DD'
+}
+
 @Component({
   selector: 'app-agenda',
+  standalone: true,
   templateUrl: './agenda.page.html',
   styleUrls: ['./agenda.page.scss'],
-  standalone: true,
-  imports: [CommonModule, IonHeader, IonToolbar, IonButtons, 
-    IonMenuButton, IonTitle, IonContent, 
-    IonItem, IonLabel, IonList, IonCardContent, IonButton, 
-    IonCardSubtitle, IonCardTitle, IonCardHeader, IonCard, 
-    IonModal, TitleCasePipe],
+  imports: [
+    CommonModule,
+    IonHeader,
+    IonToolbar,
+    IonButtons,
+    IonMenuButton,
+    IonTitle,
+    IonContent,
+    IonModal,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardSubtitle,
+    IonCardContent,
+    IonButton,
+    IonList,
+    IonItem,
+    IonLabel,
+    HttpClientModule, // ⬅️ nécessaire pour les appels HTTP dans ce composant
+  ],
 })
-export class AgendaPage implements OnInit {
-  public folder!: string;
-  private activatedRoute = inject(ActivatedRoute);
-  constructor() {}
+export class AgendaPage implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('calendarWrapper', { read: ElementRef })
+  calendarWrapper!: ElementRef;
 
-currentDate = new Date();
-  currentMonth!: number;
-  currentYear!: number;
+  private calendarGesture?: Gesture;
 
+  currentDate: Date = new Date();
+  monthLabel = '';
+  weekdayNames: string[] = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
   days: CalendarDay[] = [];
-  weekdayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
-  // Mock d’événements — tu pourras les remplacer par des données réelles
-  events: CalendarEvent[] = [
-    { date: '2025-11-21', title: 'Réunion équipe', color: '#3b82f6', description: 'Réunion hebdo avec le staff.' },
-    { date: '2025-11-23', title: 'Culte spécial', color: '#10b981', description: 'Culte avec invités.' },
-    { date: '2025-11-23', title: 'Répétition chorale', color: '#f59e0b', description: 'Préparation louange.' },
-    { date: '2025-11-25', title: 'Visite missionnaire', color: '#ec4899', description: 'Rencontre avec les missionnaires.' },
-  ];
-
-  // ====== ÉTAT DU MODAL (bottom sheet) ======
-  selectedDay: CalendarDay | null = null;
   isDayModalOpen = false;
+  selectedDay: CalendarDay | null = null;
+  selectedDayLabel = '';
 
-  ngOnInit() {
-    this.currentMonth = this.currentDate.getMonth();
-    this.currentYear = this.currentDate.getFullYear();
-    this.generateCalendar();
+  swipeDirection: 'left' | 'right' | null = null;
+
+  // 🔹 événements venant du backend
+  private events: CalendarEvent[] = [];
+
+  isLoadingEvents = false;
+  loadError?: string;
+
+  constructor(
+    private gestureCtrl: GestureController,
+    private http: HttpClient
+  ) {}
+
+  ngOnInit(): void {
+    this.updateMonthLabel();
+    // On affiche déjà un calendrier vide
+    this.generateCalendarDays();
+    // Puis on charge les événements depuis l’API
+    this.loadEventsFromBackend();
   }
 
-  get monthLabel(): string {
-    const formatter = new Intl.DateTimeFormat('fr-FR', {
+  ngAfterViewInit(): void {
+    const el = this.calendarWrapper?.nativeElement;
+    if (!el) {
+      console.warn('calendarWrapper non trouvé');
+      return;
+    }
+
+    this.calendarGesture = this.gestureCtrl.create(
+      {
+        el,
+        gestureName: 'calendar-swipe',
+        direction: 'x',
+        threshold: 10,
+        onEnd: (detail) => {
+          const deltaX = detail.deltaX;
+          const deltaY = detail.deltaY;
+
+          // On vérifie que le mouvement est surtout horizontal
+          if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+            if (deltaX < 0) {
+              // swipe vers la gauche -> mois suivant
+              this.swipeDirection = 'left';
+              this.nextMonth();
+            } else {
+              // swipe vers la droite -> mois précédent
+              this.swipeDirection = 'right';
+              this.prevMonth();
+            }
+
+            // On enlève l’effet visuel après un court délai
+            setTimeout(() => {
+              this.swipeDirection = null;
+            }, 250);
+          }
+        },
+      },
+      true
+    );
+
+    this.calendarGesture?.enable(true);
+  }
+
+  ngOnDestroy(): void {
+    this.calendarGesture?.destroy();
+  }
+
+  // 🔹 Chargement des événements depuis le backend
+  private loadEventsFromBackend(): void {
+    this.isLoadingEvents = true;
+    this.loadError = undefined;
+
+    this.http
+      .get<AgendaApiItem[] | any>('https://glcbaudour.be/api/agenda')
+      .subscribe({
+        next: (data) => {
+          console.log('Réponse /api/agenda :', data);
+
+          let items: AgendaApiItem[] = [];
+
+          // Cas 1 : l’API renvoie directement un tableau
+          if (Array.isArray(data)) {
+            items = data as AgendaApiItem[];
+          }
+          // Cas 2 : format { items: [...] }
+          else if (data && Array.isArray(data.items)) {
+            items = data.items as AgendaApiItem[];
+          }
+          // Cas 3 : format { data: [...] }
+          else if (data && Array.isArray(data.data)) {
+            items = data.data as AgendaApiItem[];
+          } else {
+            console.warn('Format de réponse inattendu pour /api/agenda');
+            items = [];
+          }
+
+          this.events = items.map((it) => ({
+            title: it.title,
+            description: it.description,
+            color: it.color,
+            date: new Date(it.date),
+          }));
+
+          this.isLoadingEvents = false;
+          // On régénère la grille avec les événements récupérés
+          this.generateCalendarDays();
+        },
+        error: (err) => {
+          console.error('Erreur lors du chargement de /api/agenda', err);
+          this.isLoadingEvents = false;
+          this.loadError =
+            "Impossible de charger l'agenda pour le moment.";
+          // On garde quand même un calendrier vide
+          this.generateCalendarDays();
+        },
+      });
+  }
+
+  prevMonth(): void {
+    const year = this.currentDate.getFullYear();
+    const month = this.currentDate.getMonth();
+    this.currentDate = new Date(year, month - 1, 1);
+    this.updateMonthLabel();
+    this.generateCalendarDays();
+  }
+
+  nextMonth(): void {
+    const year = this.currentDate.getFullYear();
+    const month = this.currentDate.getMonth();
+    this.currentDate = new Date(year, month + 1, 1);
+    this.updateMonthLabel();
+    this.generateCalendarDays();
+  }
+
+  openDayDetails(day: CalendarDay): void {
+    this.selectedDay = day;
+    this.selectedDayLabel = this.formatDateLabel(day.date);
+    this.isDayModalOpen = true;
+  }
+
+  closeDayDetails(): void {
+    this.isDayModalOpen = false;
+    this.selectedDay = null;
+  }
+
+  private updateMonthLabel(): void {
+    this.monthLabel = new Intl.DateTimeFormat('fr-FR', {
       month: 'long',
       year: 'numeric',
-    });
-    return formatter.format(new Date(this.currentYear, this.currentMonth, 1));
+    }).format(this.currentDate);
   }
 
-  get selectedDayLabel(): string {
-    if (!this.selectedDay) return '';
-    const formatter = new Intl.DateTimeFormat('fr-FR', {
+  private generateCalendarDays(): void {
+    const year = this.currentDate.getFullYear();
+    const month = this.currentDate.getMonth();
+
+    const firstOfMonth = new Date(year, month, 1);
+    const lastOfMonth = new Date(year, month + 1, 0);
+
+    const startDayOfWeek = (firstOfMonth.getDay() + 6) % 7; // Lundi = 0
+    const daysInMonth = lastOfMonth.getDate();
+
+    const days: CalendarDay[] = [];
+
+    // Jours du mois précédent pour compléter la 1ère ligne
+    for (let i = 0; i < startDayOfWeek; i++) {
+      const date = new Date(year, month, 1 - (startDayOfWeek - i));
+      days.push({
+        date,
+        inCurrentMonth: false,
+        isToday: this.isToday(date),
+        events: this.getEventsForDate(date),
+      });
+    }
+
+    // Jours du mois courant
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(year, month, d);
+      days.push({
+        date,
+        inCurrentMonth: true,
+        isToday: this.isToday(date),
+        events: this.getEventsForDate(date),
+      });
+    }
+
+    // Compléter avec les jours du mois suivant jusqu’à un multiple de 7
+    while (days.length % 7 !== 0) {
+      const lastDate = days[days.length - 1].date;
+      const nextDate = new Date(
+        lastDate.getFullYear(),
+        lastDate.getMonth(),
+        lastDate.getDate() + 1
+      );
+      days.push({
+        date: nextDate,
+        inCurrentMonth: false,
+        isToday: this.isToday(nextDate),
+        events: this.getEventsForDate(nextDate),
+      });
+    }
+
+    this.days = days;
+  }
+
+  private isToday(date: Date): boolean {
+    const today = new Date();
+    return (
+      date.getFullYear() === today.getFullYear() &&
+      date.getMonth() === today.getMonth() &&
+      date.getDate() === today.getDate()
+    );
+  }
+
+  private getEventsForDate(date: Date): CalendarEvent[] {
+    const key = this.toDateKey(date);
+    return this.events.filter((ev) => this.toDateKey(ev.date) === key);
+  }
+
+  private toDateKey(date: Date): string {
+    return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+  }
+
+  private formatDateLabel(date: Date): string {
+    return new Intl.DateTimeFormat('fr-FR', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
       year: 'numeric',
-    });
-    return formatter.format(this.selectedDay.date);
+    }).format(date);
   }
-
-  prevMonth() {
-    if (this.currentMonth === 0) {
-      this.currentMonth = 11;
-      this.currentYear--;
-    } else {
-      this.currentMonth--;
-    }
-    this.generateCalendar();
-  }
-
-  nextMonth() {
-    if (this.currentMonth === 11) {
-      this.currentMonth = 0;
-      this.currentYear++;
-    } else {
-      this.currentMonth++;
-    }
-    this.generateCalendar();
-  }
-
-  private generateCalendar() {
-    this.days = [];
-
-    const firstOfMonth = new Date(this.currentYear, this.currentMonth, 1);
-    const jsDay = firstOfMonth.getDay();
-    const offset = (jsDay + 6) % 7; // Lundi = 0
-
-    const startDate = new Date(firstOfMonth);
-    startDate.setDate(firstOfMonth.getDate() - offset);
-
-    for (let i = 0; i < 42; i++) {
-      const date = new Date(startDate);
-      date.setDate(startDate.getDate() + i);
-
-      const inCurrentMonth = date.getMonth() === this.currentMonth;
-      const isToday = this.isSameDate(date, new Date());
-      const events = this.getEventsForDate(date);
-
-      this.days.push({ date, inCurrentMonth, isToday, events });
-    }
-  }
-
-  private getEventsForDate(date: Date): CalendarEvent[] {
-    const key = this.toKey(date);
-    return this.events.filter((e) => e.date === key);
-  }
-
-  private toKey(date: Date): string {
-    const y = date.getFullYear();
-    const m = (date.getMonth() + 1).toString().padStart(2, '0');
-    const d = date.getDate().toString().padStart(2, '0');
-    return `${y}-${m}-${d}`;
-  }
-
-  private isSameDate(a: Date, b: Date): boolean {
-    return (
-      a.getFullYear() === b.getFullYear() &&
-      a.getMonth() === b.getMonth() &&
-      a.getDate() === b.getDate()
-    );
-  }
-
-  // ====== GESTION DU BOTTOM SHEET ======
-
-  openDayDetails(day: CalendarDay) {
-    if (!day.events || day.events.length === 0) {
-      // Si tu veux ouvrir quand même même sans événements, supprime ce return
-      return;
-    }
-    this.selectedDay = day;
-    this.isDayModalOpen = true;
-  }
-
-  closeDayDetails() {
-    this.isDayModalOpen = false;
-  }
-
 }

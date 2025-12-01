@@ -17,29 +17,23 @@
     </div>
 
     <div class="home-shortcuts">
-      <ion-card button>
+      <!-- Affichage des actus dynamiques -->
+      <ion-card button *ngFor="let actu of actuList">
         <ion-card-content>
-          <ion-img src="https://glcbaudour.be/wp-content/uploads/2025/10/a333-1024x576.jpg" alt="Aperçu de la section 1" />
+          <ion-img
+            [src]="actu.image"
+            [alt]="actu.name || 'Aperçu de la section'"
+          ></ion-img>
         </ion-card-content>
       </ion-card>
 
-      <ion-card button>
-        <ion-card-content>         
-          <ion-img src="https://glcbaudour.be/wp-content/uploads/2025/10/coiffure201620920-1024x586.jpg" alt="Aperçu de la section 1" />
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card button>
-        <ion-card-content>         
-          <ion-img src="https://glcbaudour.be/wp-content/uploads/2025/10/marchedenoele-1024x611.jpg" alt="Aperçu de la section 1" />
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card button>
-        <ion-card-content>         
-          <ion-img src="https://glcbaudour.be/wp-content/uploads/2025/10/fete20de20noele-1024x611.jpg" alt="Aperçu de la section 1" />
-        </ion-card-content>
-      </ion-card>
+      <!-- Optionnel : gestion de l’erreur ou du chargement -->
+      <div *ngIf="isLoading" class="loading-text">
+        Chargement des actualités...
+      </div>
+      <div *ngIf="error" class="error-text">
+        {{ error }}
+      </div>
     </div>
   </div>
 </ion-content>

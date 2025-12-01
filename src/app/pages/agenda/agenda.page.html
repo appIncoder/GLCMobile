@@ -8,7 +8,14 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="agenda-page">
-  <div class="calendar-wrapper">
+  <div
+    class="calendar-wrapper"
+    #calendarWrapper
+    [ngClass]="{
+      'swipe-left': swipeDirection === 'left',
+      'swipe-right': swipeDirection === 'right'
+    }"
+  >
 
     <!-- Barre de navigation mois -->
     <div class="calendar-header">
@@ -64,58 +71,57 @@
   </div>
 
   <ion-modal
-  [isOpen]="isDayModalOpen"
-  (didDismiss)="closeDayDetails()"
-  [breakpoints]="[0, 0.35, 0.7]"
-  [initialBreakpoint]="0.35"
-  handleBehavior="cycle"
->
-  <ng-template>
-    <ion-content class="day-modal">
-      <div class="day-modal-handle"></div>
+    [isOpen]="isDayModalOpen"
+    (didDismiss)="closeDayDetails()"
+    [breakpoints]="[0, 0.35, 0.7]"
+    [initialBreakpoint]="0.35"
+    handleBehavior="cycle"
+  >
+    <ng-template>
+      <ion-content class="day-modal">
+        <div class="day-modal-handle"></div>
 
-      <ion-card class="day-card">
-        <ion-card-header>
-          <ion-card-title class="day-modal-date">
-            {{ selectedDayLabel | titlecase }}
-          </ion-card-title>
-          <ion-card-subtitle>
-            <ion-button fill="clear" size="small" (click)="closeDayDetails()">
-              Fermer
-            </ion-button>
-          </ion-card-subtitle>
-        </ion-card-header>
+        <ion-card class="day-card">
+          <ion-card-header>
+            <ion-card-title class="day-modal-date">
+              {{ selectedDayLabel | titlecase }}
+            </ion-card-title>
+            <ion-card-subtitle>
+              <ion-button fill="clear" size="small" (click)="closeDayDetails()">
+                Fermer
+              </ion-button>
+            </ion-card-subtitle>
+          </ion-card-header>
 
-        <ion-card-content>
+          <ion-card-content>
 
-          <div *ngIf="selectedDay?.events?.length; else noEvents">
-            <ion-list>
-              <ion-item *ngFor="let ev of selectedDay?.events">
-                <div
-                  class="event-color-dot"
-                  [style.background]="ev.color || '#3b82f6'"
-                ></div>
+            <div *ngIf="selectedDay?.events?.length; else noEvents">
+              <ion-list>
+                <ion-item *ngFor="let ev of selectedDay?.events">
+                  <div
+                    class="event-color-dot"
+                    [style.background]="ev.color || '#3b82f6'"
+                  ></div>
 
-                <ion-label>
-                  <h2>{{ ev.title }}</h2>
-                  <p *ngIf="ev.description">{{ ev.description }}</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
-          </div>
-
-          <ng-template #noEvents>
-            <div class="day-modal-empty">
-              Aucun événement pour ce jour.
+                  <ion-label>
+                    <h2>{{ ev.title }}</h2>
+                    <p *ngIf="ev.description">{{ ev.description }}</p>
+                  </ion-label>
+                </ion-item>
+              </ion-list>
             </div>
-          </ng-template>
 
-        </ion-card-content>
-      </ion-card>
+            <ng-template #noEvents>
+              <div class="day-modal-empty">
+                Aucun événement pour ce jour.
+              </div>
+            </ng-template>
 
-    </ion-content>
-  </ng-template>
-</ion-modal>
+          </ion-card-content>
+        </ion-card>
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
 </ion-content>
-

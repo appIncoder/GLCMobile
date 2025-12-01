@@ -7,6 +7,18 @@
     max-width: 900px;
     margin: 0 auto;
     padding: 8px 4px 16px;
+
+    // ✅ pour que l’animation soit fluide
+    will-change: transform;
+
+    // ✅ effets visuels sur swipe
+    &.swipe-left {
+      animation: swipeLeft 0.25s ease-out;
+    }
+
+    &.swipe-right {
+      animation: swipeRight 0.25s ease-out;
+    }
   }
 
   .calendar-header {
@@ -136,7 +148,6 @@
   }
 }
 
-
 /* Styles du bottom sheet */
 .day-modal {
   --background: #020617;
@@ -199,4 +210,29 @@
   margin-top: 24px;
   font-size: 0.9rem;
   color: #9ca3af;
+}
+
+/* ✅ Animations de feedback sur swipe */
+@keyframes swipeLeft {
+  0% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(-40px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes swipeRight {
+  0% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(40px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
