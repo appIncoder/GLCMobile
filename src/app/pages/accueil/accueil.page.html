@@ -7,16 +7,15 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="home-page">
-  <div class="home-container">
-    <div class="home-hero">
+<ion-content [fullscreen]="true">
+  <div>
+    <div>
       <ion-img src="assets/cropped-en-tete-2.png" alt="Logo du GLC Baudour" class="home-logo" />
-      <p class="home-subtitle">
+      <p style="text-align:center">
         Une place pour chacun, chacun à sa place
       </p>
     </div>
-
-    <div class="home-shortcuts">
+    <div>
       <!-- Affichage des actus dynamiques -->
       <ion-card button *ngFor="let actu of actuList">
         <ion-card-content>

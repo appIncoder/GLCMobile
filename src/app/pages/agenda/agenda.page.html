@@ -98,16 +98,30 @@
             <div *ngIf="selectedDay?.events?.length; else noEvents">
               <ion-list>
                 <ion-item *ngFor="let ev of selectedDay?.events">
-                  <div
-                    class="event-color-dot"
-                    [style.background]="ev.color || '#3b82f6'"
-                  ></div>
+          <ion-card>
 
-                  <ion-label>
-                    <h2>{{ ev.title }}</h2>
-                    <p *ngIf="ev.description">{{ ev.description }}</p>
-                  </ion-label>
-                </ion-item>
+            <!-- 3. Image -->
+            <ion-img
+              *ngIf="ev.imageUrl"
+              [src]="ev.imageUrl"
+              alt="Illustration de {{ ev.title }}"
+            ></ion-img>
+
+            <!-- 4. Reste des informations -->
+            <ion-card-header>
+              <ion-card-title>{{ ev.title }}</ion-card-title>
+              <ion-card-subtitle *ngIf="ev.time">
+                {{ ev.time }}
+              </ion-card-subtitle>
+            </ion-card-header>
+
+            <ion-card-content>
+              <p *ngIf="ev.description">
+                {{ ev.description }}
+              </p>
+            </ion-card-content>
+
+          </ion-card>               </ion-item>
               </ion-list>
             </div>
 

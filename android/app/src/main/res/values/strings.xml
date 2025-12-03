@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">GLC App</string>
-    <string name="title_activity_main">GLC App</string>
+    <string name="app_name">GLC Mobile</string>
+    <string name="title_activity_main">GLC Mobile</string>
     <string name="package_name">mobile.app.glcbaudour.be</string>
     <string name="custom_url_scheme">mobile.app.glcbaudour.be</string>
 </resources>

@@ -23,7 +23,7 @@ import {
   IonButton,
   IonList,
   IonItem,
-  IonLabel,
+  IonImg,
 } from '@ionic/angular/standalone';
 import { Gesture, GestureController } from '@ionic/angular';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -33,6 +33,8 @@ interface CalendarEvent {
   description?: string;
   color?: string;
   date: Date;
+  time?: string;      // ⬅️ nouvel attribut
+  imageUrl?: string;  // ⬅️ nouvel attribut
 }
 
 interface CalendarDay {
@@ -45,12 +47,23 @@ interface CalendarDay {
 /**
  * Structure attendue depuis l'API /api/agenda
  * (à adapter en fonction de ton backend réel)
+ *
+ * Exemple de payload pour un élément :
+ * {
+ *   "title": "Célébration du dimanche",
+ *   "date": "2025-12-16",
+ *   "time": "10:00",
+ *   "image_url": "https://glcbaudour.be/images/mon-image.jpg",
+ *   "description": "..."
+ * }
  */
 interface AgendaApiItem {
   title: string;
   description?: string;
   color?: string;
-  date: string; // ISO string ou 'YYYY-MM-DD'
+  date: string;      // ISO string ou 'YYYY-MM-DD'
+  time?: string;     // ⬅️ récupéré depuis le backend
+  image_url?: string; // ⬅️ récupéré depuis le backend
 }
 
 @Component({
@@ -75,7 +88,7 @@ interface AgendaApiItem {
     IonButton,
     IonList,
     IonItem,
-    IonLabel,
+    IonImg,
     HttpClientModule, // ⬅️ nécessaire pour les appels HTTP dans ce composant
   ],
 })
@@ -195,6 +208,8 @@ export class AgendaPage implements OnInit, AfterViewInit, OnDestroy {
             description: it.description,
             color: it.color,
             date: new Date(it.date),
+            time: it.time,               // ⬅️ mappage du champ "time"
+            imageUrl: it.image_url,      // ⬅️ mappage du champ "image_url"
           }));
 
           this.isLoadingEvents = false;
