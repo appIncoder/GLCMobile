@@ -46,7 +46,6 @@
     </ion-card>
   </div>
 
-  <!-- FICHE DÉTAILLÉE EN BOTTOM SHEET -->
   <ion-modal
     [isOpen]="isActivityModalOpen"
     (didDismiss)="closeActivityDetails()"
@@ -58,55 +57,85 @@
       <ion-content class="activity-modal">
         <div class="activity-modal-handle"></div>
 
-        <ion-card class="activity-detail-card" *ngIf="selectedActivity">
+        <ion-card class="activity-detail-header" *ngIf="selectedActivity">
           <ion-card-header>
             <ion-card-title class="activity-detail-title">
               {{ selectedActivity.name }}
             </ion-card-title>
-            <ion-card-subtitle class="activity-detail-subtitle">
-              <ion-icon
-                *ngIf="selectedActivity.planned"
-                name="notifications-outline"
-                class="activity-notif-icon"
-              ></ion-icon>
             <div class="activity-detail-actions">
               <ion-button fill="outline" size="small" (click)="closeActivityDetails()">
                 Fermer
               </ion-button>
             </div>
-            </ion-card-subtitle>
           </ion-card-header>
-
-          <ion-card-content>
-            <ion-card>
-            <ion-list lines="none">
-              <ion-item>
-                <ion-icon slot="start" name="time-outline"></ion-icon>
-                <ion-label>
-                  <h2>Jours & heures</h2>
-                  <p>{{ selectedActivity.schedule }}</p>
-                </ion-label>
-              </ion-item>
-
-              <ion-item>
-                <ion-icon slot="start" name="person-outline"></ion-icon>
-                <ion-label>
-                  <h2>Responsable</h2>
-                  <p>{{ selectedActivity.responsible }}</p>
-                </ion-label>
-              </ion-item>
-
-              <ion-item button [href]="'tel:' + selectedActivity.phone">
-                <ion-icon slot="start" name="call-outline"></ion-icon>
-                <ion-label>
-                  <h2>Téléphone</h2>
-                  <p>{{ selectedActivity.phone }}</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
-            </ion-card>
-          </ion-card-content>
         </ion-card>
+
+<swiper-container
+  *ngIf="selectedActivity"
+  class="activity-swiper pagination-top"
+  [initial-slide]="slideOpts.initialSlide"
+  [speed]="slideOpts.speed"
+  pagination="true"
+  pagination-clickable="true"
+>
+  <!-- SLIDE 1 -->
+  <swiper-slide>
+    <ion-card class="activity-detail-card">
+      <ion-card-header>
+        <ion-card-title>Détails de l’activité</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-img
+          [src]="selectedActivity.image"
+          class="activity-detail-image">
+        </ion-img>
+
+        <div class="activity-detail-description">
+          {{ selectedActivity.description }}
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </swiper-slide>
+
+  <!-- SLIDE 2 -->
+  <swiper-slide>
+    <ion-card class="activity-detail-card">
+      <ion-card-header>
+        <ion-card-title>Informations pratiques</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-list lines="none">
+          <ion-item>
+            <ion-icon slot="start" name="time-outline"></ion-icon>
+            <ion-label>
+              <h2>Jours & heures</h2>
+              <p>{{ selectedActivity.schedule }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon slot="start" name="person-outline"></ion-icon>
+            <ion-label>
+              <h2>Responsable</h2>
+              <p>{{ selectedActivity.responsible }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item button [href]="'tel:' + selectedActivity.phone">
+            <ion-icon slot="start" name="call-outline"></ion-icon>
+            <ion-label>
+              <h2>Téléphone</h2>
+              <p>{{ selectedActivity.phone }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </swiper-slide>
+</swiper-container>
+
       </ion-content>
     </ng-template>
   </ion-modal>

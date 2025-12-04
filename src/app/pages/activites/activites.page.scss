@@ -1,51 +1,86 @@
-.activity-card {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
+.activity-modal {
+  --padding-top: 8px;
 }
 
-/* Image d’en-tête */
-.activity-card-header-img {
-  height: 120px; /* hauteur du bandeau image */
-  background-size: cover;
-  background-position: center;
-  position: relative;
+.activity-modal-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 8px auto 12px;
 }
 
-/* Flou superposé */
-.img-blur-overlay {
-  position: absolute;
-  inset: 0;
-  backdrop-filter: blur(6px);
-  background: rgba(0, 0, 0, 0.25); /* léger assombrissement */
+.activity-detail-header {
+  box-shadow: none;
+  margin: 0 16px 8px;
 }
 
-/* Contenu */
-.activity-card-content {
-  padding: 0;
-}
-
-.activity-card-overlay {
-  padding: 16px;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  backdrop-filter: blur(2px);
-}
-
-.activity-name {
-  color: #fff;
-  font-size: 16px;
+.activity-detail-title {
+  font-size: 18px;
   font-weight: 600;
 }
 
-.activity-description {
-  color: #ddd;
-  font-size: 12px;
+.activity-detail-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
 }
 
-.activity-notif-icon {
-  color: var(--ion-color-warning);
-  font-size: 24px;
+.activity-slides {
+  height: calc(100% - 80px); // pour laisser la place au header
+}
+
+.activity-detail-card {
+  margin: 0 16px 24px;
+}
+
+.activity-detail-image {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.activity-detail-description {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.activity-swiper {
+  width: 100%;
+  height: auto;
+}
+
+/* Swiper pagination bullets */
+.swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.4);
+  opacity: 1;
+}
+
+.swiper-pagination-bullet-active {
+  background: #ffffff;
+}
+/* On réserve de la place en haut pour la pagination */
+.pagination-top {
+  position: relative;
+  padding-top: 32px; // espace pour les bullets au-dessus
+}
+
+/* Déplace la pagination en haut du swiper */
+.pagination-top::part(pagination) {
+  top: 0;
+  bottom: auto;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Style des bullets */
+.pagination-top::part(bullet) {
+  background: rgba(255, 255, 255, 0.4);
+  opacity: 1;
+  margin: 0 4px;
+}
+
+.pagination-top::part(bullet-active) {
+  background: #ffffff;
 }

@@ -98,7 +98,7 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
   selectedPodcast: PodcastEpisode | null = null;
 
   // URLs des APIs PHP
-  private readonly apiVideosUrl = 'https://glcbaudour.be/api/glc-videos.php';
+  private readonly apiVideosUrl = 'https://glcbaudour.be/api/videos';
   private readonly apiPodcastsUrl = 'https://glcbaudour.be/api/podcasts';
 
   constructor(

@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+
 import {
   IonHeader,
   IonToolbar,
@@ -12,13 +15,13 @@ import {
   IonItem,
   IonList,
   IonCardContent,
-  IonCardSubtitle,
   IonCardTitle,
   IonCard,
   IonCardHeader,
   IonModal,
+  IonImg,
 } from '@ionic/angular/standalone';
-import { CommonModule } from '@angular/common';
+
 import { addIcons } from 'ionicons';
 import {
   notificationsOutline,
@@ -30,7 +33,6 @@ import {
   personOutline,
   personSharp,
 } from 'ionicons/icons';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 interface Activity {
   id: number;
@@ -63,22 +65,33 @@ interface Activity {
     IonItem,
     IonList,
     IonCardContent,
-    IonCardSubtitle,
     IonCardTitle,
     IonCardHeader,
     IonCard,
     IonModal,
+    IonImg,
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ActivitesPage implements OnInit {
   private readonly ACTIVITIES_API_URL = 'https://glcbaudour.be/api/activities';
 
+  // ✅ URL image par défaut
+  private readonly DEFAULT_IMAGE_URL =
+    'https://glcbaudour.be/wp-content/uploads/2024/04/cropped-en-tete-2.png';
+
   activities: Activity[] = [];
   selectedActivity: Activity | null = null;
+
   isActivityModalOpen = false;
 
   isLoading = false;
   loadError: string | null = null;
+
+  slideOpts = {
+    initialSlide: 0,
+    speed: 400,
+  };
 
   constructor(private http: HttpClient) {
     addIcons({
@@ -93,17 +106,31 @@ export class ActivitesPage implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadActivities();
   }
 
-  private loadActivities() {
+  private loadActivities(): void {
     this.isLoading = true;
     this.loadError = null;
 
     this.http.get<{ data: Activity[] }>(this.ACTIVITIES_API_URL).subscribe({
       next: (res) => {
-        this.activities = res.data || [];
+        const rawActivities = res?.data || [];
+
+        // ✅ On injecte l’image par défaut si le champ image est vide / null / inexistant
+        this.activities = rawActivities.map((a: any) => {
+          const image =
+            a?.image && String(a.image).trim() !== ''
+              ? a.image
+              : this.DEFAULT_IMAGE_URL;
+
+          return {
+            ...a,
+            image,
+          } as Activity;
+        });
+
         this.isLoading = false;
       },
       error: (err) => {
@@ -115,14 +142,13 @@ export class ActivitesPage implements OnInit {
     });
   }
 
-  // Ouvrir la fiche détaillée
-  openActivityDetails(activity: Activity) {
+  openActivityDetails(activity: Activity): void {
     this.selectedActivity = activity;
     this.isActivityModalOpen = true;
   }
 
-  // Fermer la fiche détaillée
-  closeActivityDetails() {
+  closeActivityDetails(): void {
     this.isActivityModalOpen = false;
+    this.selectedActivity = null;
   }
 }
