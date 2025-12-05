@@ -1,7 +1,3 @@
-.glcmedia-page {
-  --background: #000;
-}
-
 .media-container {
   padding: 16px;
   display: flex;
@@ -19,38 +15,39 @@
 .media-tab {
   flex: 1;
   background: transparent;
-  border: 1px solid #4b5563;
+  border: 1px solid var(--ion-color-step-300);
   border-radius: 999px;
   padding: 6px 10px;
   font-size: 0.85rem;
-  color: #9ca3af;
+  color: var(--ion-color-step-300);
   text-align: center;
   cursor: pointer;
 }
 
 .media-tab.active {
-  background: #111827;
-  color: #f9fafb;
-  border-color: #f9fafb;
+  /* Couleur d’accent dépendante du thème */
+  background: var(--ion-color-step-400);
+  color: var(--ion-text-color);
+  border-color: var(--ion-text-color);
 }
 
 .media-swipe-hint {
-  font-size: 0.75rem;
-  color: #6b7280;
-  margin-bottom: 4px;
+  color: var(--ion-text-color-secondary);
 }
+
 
 .media-intro {
   font-size: 0.9rem;
-  color: #9ca3af;
+  color: var(--ion-text-color-secondary);
   margin-bottom: 8px;
 }
 
 .media-state {
   font-size: 0.9rem;
-  color: #e5e7eb;
+  color: var(--ion-text-color);
 
   &.error {
+    /* On garde un rouge fixe, c’est lisible dans les deux modes */
     color: #f97373;
   }
 }
@@ -84,9 +81,12 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  background: rgba(255, 255, 255, 0.06);
+
+  /* Utilise les couleurs de “card” du thème global */
+  background: var(--card-background);
   border-radius: 16px;
   overflow: hidden;
+  border: 1px solid var(--card-border-color);
 }
 
 .video-thumbnail {
@@ -104,13 +104,13 @@ ion-card-content {
 .video-title {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #f9fafb;
+  color: var(--ion-heading-color);
   margin-bottom: 4px;
 }
 
 .video-date {
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: var(--ion-color-step-300);
   text-align: right;
 }
 
@@ -129,34 +129,37 @@ ion-card-content {
 
 .podcast-card {
   margin: 0;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--card-background);
   border-radius: 16px;
   overflow: hidden;
+  border: 1px solid var(--card-border-color);
 }
 
 .podcast-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #f9fafb;
+  color: var(--ion-heading-color);
   margin-bottom: 4px;
 }
 
 .podcast-date {
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: var(--ion-color-step-300);
   margin-bottom: 8px;
   text-align: right;
 }
 
 .podcast-description {
   font-size: 0.85rem;
-  color: #e5e7eb;
+  color: var(--ion-text-color);
   margin-bottom: 8px;
 }
 
 /* Modal vidéo */
 .video-player-modal {
-  --background: #000;
+  /* Avant : --background: #000; */
+  /* Maintenant : suit le thème global */
+  --background: var(--app-background);
 }
 
 .video-player-header {
@@ -172,7 +175,7 @@ ion-card-content {
 
 /* Modal podcast */
 .podcast-player-modal {
-  --background: #000;
+  --background: var(--app-background);
 }
 
 .podcast-player-header {
@@ -188,13 +191,13 @@ ion-card-content {
 
 .podcast-player-date {
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: var(--ion-color-step-300);
   margin-bottom: 8px;
 }
 
 .podcast-player-description {
   font-size: 0.85rem;
-  color: #e5e7eb;
+  color: var(--ion-text-color);
   margin-bottom: 12px;
 }
 
@@ -205,6 +208,7 @@ ion-card-content {
     width: 100%;
   }
 }
+
 .podcast-thumbnail {
   width: 100%;
   height: auto;

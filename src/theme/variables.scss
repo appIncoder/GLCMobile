@@ -1,87 +1,87 @@
+// src/theme/variables.scss
 // For information on how to create your own theme, please refer to:
 // https://ionicframework.com/docs/theming/
 
-// Set background color to black
+// ==========================
+// THÈME PAR DÉFAUT : DARK
+// ==========================
 :root {
-  --ion-background-color: #000000;
+  --ion-text-color-secondary: #e5e7eb; /* Très lisible en dark */
+
+  // Gradient de fond (bleus foncés : plus foncé en haut, moins foncé en bas)
+  --app-background: linear-gradient(to bottom, #010e49, #111f42);
+
+  // Couleur de fond "officielle" Ionic (on laisse le gradient faire le boulot)
+  --ion-background-color: transparent;
   --ion-background-color-rgb: 0, 0, 0;
-  
-  // Set text color to white for better contrast
-  --ion-text-color: #ffffff;
-  --ion-text-color-rgb: 255, 255, 255;
-  
-  // Set heading color to white
+
+  // Couleurs de texte
+  --ion-text-color: #f9fafb;
+  --ion-text-color-rgb: 249, 250, 251;
+
+  // Couleur des titres
   --ion-heading-color: #ffffff;
-  
-  // Set color for various text elements
-  --ion-color-step-50: #f2f2f2;
-  --ion-color-step-100: #e6e6e6;
-  --ion-color-step-150: #d9d9d9;
-  --ion-color-step-200: #cccccc;
-  --ion-color-step-250: #bfbfbf;
-  --ion-color-step-300: #b3b3b3;
-  --ion-color-step-350: #a6a6a6;
-  --ion-color-step-400: #999999;
-  --ion-color-step-450: #8c8c8c;
-  --ion-color-step-500: #808080;
-  --ion-color-step-550: #737373;
-  --ion-color-step-600: #666666;
-  --ion-color-step-650: #595959;
-  --ion-color-step-700: #4d4d4d;
-  --ion-color-step-750: #404040;
-  --ion-color-step-800: #333333;
-  --ion-color-step-850: #262626;
-  --ion-color-step-900: #1a1a1a;
+
+  // Steps pour les variations de texte / bordures en mode dark
+  --ion-color-step-50: #e5e7eb;
+  --ion-color-step-100: #d1d5db;
+  --ion-color-step-150: #9ca3af;
+  --ion-color-step-200: #6b7280;
+  --ion-color-step-250: #4b5563;
+  --ion-color-step-300: #374151;
+  --ion-color-step-350: #1f2937;
+  --ion-color-step-400: #111827;
+  --ion-color-step-450: #0b1120;
+  --ion-color-step-500: #020617;
+
+  // Composants DARK
+  --toolbar-background: rgba(15, 23, 42, 0.92);
+  --card-background: rgba(15, 23, 42, 0.85);
+  --card-border-color: rgba(148, 163, 184, 0.9);
+  --button-background: rgba(15, 23, 42, 0.8);
+  --button-border-color: #e5e7eb;
+
+  // MENU DARK
+  --menu-background: rgba(15, 23, 42, 0.98);
 }
 
-// Override content background and text
-ion-toolbar {
-  --background: #000;
-  --color: #fff;
-}
+// ==========================
+// THÈME LIGHT (body.light-theme)
+// ==========================
+body.light-theme {
+  --ion-text-color-secondary: #374151; /* Gris foncé lisible en light */
 
-ion-content {
-  --background: #000000;
-  --color: #ffffff;
-}
+  // Gradient vertical gris clair -> blanc
+  --app-background: linear-gradient(to bottom, #e5e7eb, #ffffff);
 
-// Ensure labels and text are white
-ion-label {
-  color: #ffffff;
-}
+  --ion-background-color: transparent;
+  --ion-background-color-rgb: 255, 255, 255;
 
-// Ensure card content has white text
-ion-card-content {
-  color: #ffffff;
-}
+  // Texte plus sombre
+  --ion-text-color: #111827;
+  --ion-text-color-rgb: 17, 24, 39;
 
-// Style ion-card with black background and white border
-ion-card {
-  --background: #000000;
-  border: 1px solid #ffffff;
-}
+  --ion-heading-color: #111827;
 
-ion-card-header {
-  --background: #000000;
-}
+  // Steps light
+  --ion-color-step-50: #111827;
+  --ion-color-step-100: #1f2937;
+  --ion-color-step-150: #374151;
+  --ion-color-step-200: #4b5563;
+  --ion-color-step-250: #6b7280;
+  --ion-color-step-300: #9ca3af;
+  --ion-color-step-350: #d1d5db;
+  --ion-color-step-400: #e5e7eb;
+  --ion-color-step-450: #f3f4f6;
+  --ion-color-step-500: #ffffff;
 
-// Style ion-card-title with white color
-ion-card-title {
-  color: #ffffff;
-}
+  // Composants LIGHT
+  --toolbar-background: rgba(243, 244, 246, 0.94);
+  --card-background: rgba(255, 255, 255, 0.9);
+  --card-border-color: #d1d5db;
+  --button-background: rgba(243, 244, 246, 0.9);
+  --button-border-color: #4b5563;
 
-// Style ion-button with black background and white border
-ion-button {
-  --background: rgba(0, 0, 0, 0.5);
-  --border-width: 1px;
-  --border-style: solid;
-  --border-color: #ffffff;
-  --color: #ffffff;
-  
-  &.don-btn {
-    display: block;
-    width: 50vw;
-    margin-left: auto;
-    margin-right: auto;
-  }
+  // MENU LIGHT
+  --menu-background: rgba(255, 255, 255, 0.98);
 }

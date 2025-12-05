@@ -3,7 +3,8 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, 
   IonListHeader, IonMenuToggle, IonItem, IonIcon, 
-  IonLabel, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
+  IonLabel, IonRouterOutlet, IonRouterLink,
+  IonToggle } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { h } from 'ionicons/dist/types/stencil-public-runtime';
 import { 
@@ -14,15 +15,24 @@ import {
   heartHalfOutline, heartHalfSharp,
   videocamOutline, videocamSharp,
   peopleOutline, peopleSharp,
-  handLeftOutline, handLeftSharp } from 'ionicons/icons';
+  handLeftOutline, handLeftSharp, 
+  moonOutline, moonSharp,
+  sunnyOutline, sunnySharp} from 'ionicons/icons';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
-  imports: [RouterLink, RouterLinkActive, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterLink, IonRouterOutlet],
+  imports: [RouterLink, RouterLinkActive, IonApp, 
+    IonSplitPane, IonMenu, IonContent, IonList, 
+    IonListHeader, IonMenuToggle, IonItem, 
+    IonIcon, IonLabel, IonRouterLink, IonRouterOutlet,
+   IonToggle],
 })
 export class AppComponent {
+  isDark = true;
+
   public appPages = [
     { title: 'Accueil', url: '/accueil', icon: 'home' },
     { title: 'Pasteur', url: '/pasteur', icon: 'man' },
@@ -33,7 +43,7 @@ export class AppComponent {
     { title: 'Nous rejoindre', url: '/nousjoindre', icon: 'people' },
   ];
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
-  constructor() {
+  constructor(private themeService: ThemeService) {
     addIcons({ 
       archiveOutline, archiveSharp, 
       homeOutline, homeSharp,
@@ -42,6 +52,22 @@ export class AppComponent {
       heartHalfOutline, heartHalfSharp,
       videocamOutline, videocamSharp,
       peopleOutline, peopleSharp,
-      handLeftOutline, handLeftSharp });
+      handLeftOutline, handLeftSharp,
+      moonOutline, moonSharp,
+      sunnyOutline, sunnySharp });
+  }
+
+  onInit() {
+    this.onThemeToggle(new CustomEvent('toggle', { detail: { checked: this.themeService.isDarkMode() } })); 
+  } 
+
+  onThemeToggle(ev: CustomEvent) {
+    const checked = (ev.detail as any).checked;
+    this.isDark = checked;
+    if (checked) {
+      this.themeService.setDarkMode();
+    } else {
+      this.themeService.setLightMode();
+    }
   }
 }
