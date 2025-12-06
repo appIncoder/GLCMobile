@@ -9,7 +9,7 @@
   --ion-text-color-secondary: #e5e7eb; /* Très lisible en dark */
 
   // Gradient de fond (bleus foncés : plus foncé en haut, moins foncé en bas)
-  --app-background: linear-gradient(to bottom, #010e49, #111f42);
+  --app-background: linear-gradient(to top, #010e49, #111f42);
 
   // Couleur de fond "officielle" Ionic (on laisse le gradient faire le boulot)
   --ion-background-color: transparent;
