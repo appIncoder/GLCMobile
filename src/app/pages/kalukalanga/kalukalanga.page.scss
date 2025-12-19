@@ -1,12 +1,14 @@
-.kalukalanga-container {
+/* Layout (corrigé pour matcher le HTML existant) */
+.home-container {
   padding: 16px;
 }
 
-.kalukalanga-logo {
+.home-logo {
   width: 100%;
   height: auto;
 }
 
+/* Paiement */
 .payment-description {
   text-align: center;
   margin-bottom: 20px;
@@ -17,111 +19,10 @@
   margin-bottom: 8px;
 }
 
-.banking-apps-section {
-  margin: 20px 0;
-  padding: 15px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-}
-
-.banking-apps-title {
-  font-weight: 600;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.banking-app-btn {
-  margin-bottom: 8px;
-  font-size: 13px;
-}
-
 .payment-submit-btn {
   margin-top: 20px;
 }
 
-.discovery-modal {
-  padding: 0;
-}
-
-.discovery-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  text-align: center;
-  min-height: 300px;
-
-  ion-spinner {
-    margin-bottom: 20px;
-    width: 60px;
-    height: 60px;
-  }
-}
-
-.discovery-text {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 15px;
-  color: #ffffff;
-}
-
-.discovery-amount {
-  font-size: 14px;
-  color: #cccccc;
-  margin-bottom: 0;
-}
-
-.discovery-results {
-  padding: 10px 0;
-}
-
-.discovery-title {
-  font-size: 16px;
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 10px;
-  color: #ffffff;
-}
-
-.discovery-instruction {
-  font-size: 13px;
-  text-align: center;
-  color: #cccccc;
-  margin-bottom: 20px;
-}
-
-.detected-app-btn {
-  margin-bottom: 10px;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.app-button-content {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  gap: 12px;
-}
-
-.app-logo {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.app-label {
-  flex: 1;
-  text-align: left;
-}
-
-.close-btn {
-  margin-top: 20px;
-}
-
-// Embedded Stripe Payment Styles
 .amount-display {
   text-align: center;
   padding: 20px;
@@ -199,4 +100,3 @@
     opacity: 1;
   }
 }
-

@@ -8,6 +8,9 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="activities-page ion-padding">
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <div class="activities-intro">
     Retrouvez ici les principales activités organisées au GLC Baudour.
     Touchez une activité pour voir les détails.
@@ -111,7 +114,7 @@
             <ion-icon slot="start" name="time-outline"></ion-icon>
             <ion-label>
               <h2>Jours & heures</h2>
-              <p>{{ selectedActivity.schedule }}</p>
+              <h3>{{ selectedActivity.schedule }}</h3>
             </ion-label>
           </ion-item>
 
@@ -119,7 +122,7 @@
             <ion-icon slot="start" name="person-outline"></ion-icon>
             <ion-label>
               <h2>Responsable</h2>
-              <p>{{ selectedActivity.responsible }}</p>
+              <h3>{{ selectedActivity.responsible }}</h3>
             </ion-label>
           </ion-item>
 
@@ -127,7 +130,7 @@
             <ion-icon slot="start" name="call-outline"></ion-icon>
             <ion-label>
               <h2>Téléphone</h2>
-              <p>{{ selectedActivity.phone }}</p>
+              <h3>{{ selectedActivity.phone }}</h3>
             </ion-label>
           </ion-item>
         </ion-list>

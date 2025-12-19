@@ -19,6 +19,9 @@ import {
   moonOutline, moonSharp,
   sunnyOutline, sunnySharp} from 'ionicons/icons';
 import { ThemeService } from './services/theme.service';
+import { Stripe } from '@capacitor-community/stripe';
+import { environment } from '../environments/environment';
+
 
 @Component({
   selector: 'app-root',
@@ -55,6 +58,10 @@ export class AppComponent {
       handLeftOutline, handLeftSharp,
       moonOutline, moonSharp,
       sunnyOutline, sunnySharp });
+
+      Stripe.initialize({
+      publishableKey: environment.stripePublishableKey, // pk_live_...
+    });
   }
 
   onInit() {

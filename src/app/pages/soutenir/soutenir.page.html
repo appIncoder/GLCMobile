@@ -7,14 +7,16 @@
   </ion-toolbar>
 </ion-header>
 
-
-
 <ion-content [fullscreen]="true" class="soutenir-page">
   <div class="soutenir-container">
     <!-- Image Card -->
     <ion-card button>
       <ion-card-content>
-        <ion-img src="assets/don-e1591375718487.jpg" alt="Logo GLC Baudour" class="soutenir-logo" />
+        <ion-img
+          src="assets/don-e1591375718487.jpg"
+          alt="Logo GLC Baudour"
+          class="soutenir-logo"
+        />
       </ion-card-content>
     </ion-card>
 
@@ -22,8 +24,8 @@
     <ion-card>
       <ion-card-content>
         <p>
-          Soutenir le GLC Baudour financièrement est bien plus qu'une simple donation. C'est un acte d'adoration, 
-          une expression de votre foi et de votre engagement envers la mission de partage de l'Évangile. 
+          Soutenir le GLC Baudour financièrement est bien plus qu'une simple donation. C'est un acte d'adoration,
+          une expression de votre foi et de votre engagement envers la mission de partage de l'Évangile.
           Chaque contribution, quelle que soit son montant, aide à:
         </p>
         <ul>
@@ -33,7 +35,7 @@
           <li>Étendre notre rayonnement dans la région</li>
         </ul>
         <p>
-          En donnant, vous devenez partenaire de Dieu dans son œuvre. Votre générosité inspire d'autres 
+          En donnant, vous devenez partenaire de Dieu dans son œuvre. Votre générosité inspire d'autres
           et transforme des vies. Nous vous remercions sincèrement pour votre soutien.
         </p>
       </ion-card-content>
@@ -46,16 +48,15 @@
   </div>
 
   <!-- Payment Modal -->
-  <ion-modal
-    [isOpen]="isPaymentModalOpen"
-    (didDismiss)="closePaymentModal()"
-  >
+  <ion-modal [isOpen]="isPaymentModalOpen" (didDismiss)="closePaymentModal()">
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-title>Paiement Sécurisé</ion-title>
+          <ion-title>Paiement sécurisé</ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="closePaymentModal()">Fermer</ion-button>
+            <ion-button (click)="closePaymentModal()" [disabled]="isProcessingPayment">
+              Fermer
+            </ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
@@ -63,62 +64,62 @@
       <ion-content class="payment-modal">
         <ion-card>
           <ion-card-content>
-            <!-- Step 1: Amount Selection -->
-            <div *ngIf="!paymentErrorMessage && !paymentSuccessMessage && !selectedAmount">
-              <p class="payment-description">Sélectionnez un montant pour soutenir le GLC Baudour</p>
+            <p class="payment-description">
+              Sélectionnez un montant pour soutenir le GLC Baudour
+            </p>
 
-              <ion-grid>
-                <ion-row>
-                  <ion-col size="6" *ngFor="let option of paymentOptions">
-                    <ion-button
-                      [fill]="selectedAmount === option.amount ? 'solid' : 'outline'"
-                      [color]="selectedAmount === option.amount ? 'primary' : 'medium'"
-                      expand="block"
-                      (click)="selectAmount(option.amount)"
-                      class="payment-option-btn"
-                    >
-                      {{ option.label }}
-                    </ion-button>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
+            <!-- Amount Selection -->
+            <ion-grid>
+              <ion-row>
+                <ion-col size="6" *ngFor="let option of paymentOptions">
+                  <ion-button
+                    [fill]="selectedAmount === option.amount ? 'solid' : 'outline'"
+                    [color]="selectedAmount === option.amount ? 'primary' : 'medium'"
+                    expand="block"
+                    (click)="selectAmount(option.amount)"
+                    class="payment-option-btn"
+                    [disabled]="isProcessingPayment"
+                  >
+                    {{ option.label }}
+                  </ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
 
-              <ion-button
-                expand="block"
-                color="primary"
-                [disabled]="!selectedAmount"
-                (click)="processPayment()"
-                class="payment-submit-btn"
-              >
-                Continuer
-              </ion-button>
+            <!-- Amount recap -->
+            <div *ngIf="selectedAmount && !paymentSuccessMessage" class="amount-display">
+              <p class="amount-label">Montant</p>
+              <p class="amount-value">€{{ selectedAmount }}.00</p>
             </div>
 
-            <!-- Step 2: Card Payment Form -->
-            <div *ngIf="selectedAmount && !paymentSuccessMessage">
-              <div class="amount-display">
-                <p class="amount-label">Montant à payer</p>
-                <p class="amount-value">€{{ selectedAmount }}.00</p>
-              </div>
+            <!-- Pay with PaymentSheet -->
+            <ion-button
+              expand="block"
+              color="primary"
+              class="payment-submit-btn"
+              [disabled]="!selectedAmount || isProcessingPayment || !!paymentSuccessMessage"
+              (click)="payNow()"
+            >
+              <ng-container *ngIf="!isProcessingPayment">Payer</ng-container>
+              <ng-container *ngIf="isProcessingPayment">
+                <ion-spinner name="circular" style="width: 20px; height: 20px; margin-right: 8px;"></ion-spinner>
+                Traitement...
+              </ng-container>
+            </ion-button>
 
-              <app-stripe-card-form 
-                [amount]="selectedAmount"
-                (paymentSubmit)="handleCardPayment($event)"
-              ></app-stripe-card-form>
-
-              <!-- Error Message -->
-              <div *ngIf="paymentErrorMessage" class="error-box">
-                <p>{{ paymentErrorMessage }}</p>
-                <ion-button
-                  expand="block"
-                  fill="outline"
-                  color="medium"
-                  (click)="selectedAmount = null"
-                  size="small"
-                >
-                  Retour
-                </ion-button>
-              </div>
+            <!-- Error Message -->
+            <div *ngIf="paymentErrorMessage && !paymentSuccessMessage" class="error-box">
+              <p>{{ paymentErrorMessage }}</p>
+              <ion-button
+                expand="block"
+                fill="outline"
+                color="medium"
+                (click)="selectedAmount = null; paymentErrorMessage='';"
+                size="small"
+                [disabled]="isProcessingPayment"
+              >
+                Retour
+              </ion-button>
             </div>
 
             <!-- Success Message -->
@@ -131,3 +132,4 @@
       </ion-content>
     </ng-template>
   </ion-modal>
+</ion-content>

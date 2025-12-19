@@ -3,45 +3,86 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Pasteur</ion-title>
+    <ion-title>Page du Pasteur</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="home-page">
+
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <div class="home-container">
-    <div class="home-shortcuts">
-      <ion-card button>
-        <ion-card-header>
-          <ion-card-title>“L’avenir sera aussi grandiose que les promesses de Dieu” (William Carey)</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-img src="https://glcbaudour.be/assets/carrozzo.png" alt="Photo du pasteur" class="home-logo" />
-        </ion-card-content>
-      </ion-card>
 
-      <ion-card button>
-        <ion-card-content>  
-          <div>
-            Cette parole d’un missionnaire Anglais du 18ème s. a été pour moi comme une révélation qui me disait qu’avec Dieu le meilleur est à venir, il est toujours devant, prêt à s’accomplir, parce que Dieu est fidèle à sa Parole.<br>
-            <br>
-            L’homme peut vivre 30 jours sans manger, il peut vivre 3 jours sans boire, il peut vivre quelques minutes sans respirer, mais il ne peut vivre un seul instant sans espérer!
-            Le constat est universel, il existe dans le cœur de l’homme un vide qui le fait désespérer! Pourtant ce n’est pas ce que Dieu désire pour sa création.
-            La Bible déclare que Dieu a des projets de paix et de bonheur afin de nous donner un avenir et de l’espérance.
-            <br>
+    <!-- Erreur -->
+    <ion-card *ngIf="error">
+      <ion-card-content>{{ error }}</ion-card-content>
+    </ion-card>
 
-            C’est précisément ce dont nous avons le plus besoin, un avenir assuré et une réelle espérance, une ouverture vers tous les possibles
-            Un regard positif dans un univers rempli de négativisme, n’est possible qu’en découvrant l’amour et la puissance de Dieu
-            <br>
+    <!-- Contenu -->
+    <div class="home-shortcuts" *ngIf="!error && pasteurList.length">
 
-            Alors, espoir ou désespoir ?
-            Jésus dit: Je suis le chemin, la vérité et la vie (Jean 14: 6)
-            <br><br>
-            Ma prière pour vous lecteurs est qu’à travers une rencontre personnelle avec Jésus-Christ, vous puissiez donner un coup mortel au désespoir et découvrir les merveilleuses promesses de Dieu révélées pour être connectés à celui qui est la vie, Jésus!
-            <br><br>
-            Pasteur Giuseppe Carrozzo
+      <!-- Indice swipe -->
+      <div class="media-swipe-hint" *ngIf="pasteurList.length > 1">
+        <span>Swipe 👉 pour parcourir 👈 les articles.</span>
+      </div>
+
+      <!-- Swiper -->
+      <swiper-container
+        class="pasteur-swiper"
+        [slides-per-view]="1"
+        [space-between]="12"
+        [auto-height]="true"
+        [pagination]="{ clickable: true }"
+        (slidechange)="onSwiperSlideChange($event)"
+      >
+        <swiper-slide *ngFor="let item of pasteurList; let i = index">
+          <div class="pasteur-slide">
+
+            <ion-card button>
+              <ion-card-header>
+                <ion-card-title>{{ item.title }}</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-img
+                  [src]="item.image"
+                  alt="Photo du pasteur"
+                  class="home-logo"
+                ></ion-img>
+              </ion-card-content>
+            </ion-card>
+
+            <ion-card button>
+              <ion-card-content>
+                <div [innerHTML]="safeHtml(item.text)"></div>
+              </ion-card-content>
+            </ion-card>
+
           </div>
-        </ion-card-content>
-      </ion-card>
+        </swiper-slide>
+      </swiper-container>
+
+      <!-- Indicateur custom (bullets + compteur) -->
+      <div class="slide-indicator" *ngIf="pasteurList.length > 1">
+        <span
+          class="dot"
+          *ngFor="let _ of pasteurList; let i = index"
+          [class.active]="i === activeIndex"
+        ></span>
+
+        <div class="slide-count">
+          {{ activeIndex + 1 }} / {{ pasteurList.length }}
+        </div>
+      </div>
+
     </div>
+
+    <!-- Optionnel : état vide -->
+    <ion-card *ngIf="!error && !pasteurList.length">
+      <ion-card-content>Aucun article disponible.</ion-card-content>
+    </ion-card>
+
   </div>
 </ion-content>

@@ -1,0 +1,14 @@
+:host ion-content {
+  --overflow: auto;
+}
+
+.home-logo {
+  display: block;
+  margin: 12px auto;
+  max-width: 320px;
+}
+
+/* Important : force un minimum de contenu scrollable */
+:host ion-content::part(scroll) {
+  min-height: 101%;
+}

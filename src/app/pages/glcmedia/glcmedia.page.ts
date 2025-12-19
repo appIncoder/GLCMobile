@@ -20,13 +20,16 @@ import {
   IonCard,
   IonModal,
   IonButton,
+  IonRefresher,
+  IonRefresherContent,
 } from '@ionic/angular/standalone';
 
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { DatePipe } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Gesture, GestureController } from '@ionic/angular';
+import type { RefresherCustomEvent } from '@ionic/angular';
+import { finalize } from 'rxjs/operators';
 
 export interface YoutubeVideo {
   title: string;
@@ -41,9 +44,8 @@ export interface PodcastEpisode {
   description?: string;
   audioUrl: string;
   publishedAt: string;
-  imageUrl?: string;   // ⬅️ nouveau
+  imageUrl?: string;
 }
-
 
 @Component({
   selector: 'app-glcmedia',
@@ -57,6 +59,11 @@ export interface PodcastEpisode {
     IonMenuButton,
     IonTitle,
     IonContent,
+
+    // ✅ refresher
+    IonRefresher,
+    IonRefresherContent,
+
     IonCardContent,
     IonImg,
     IonCard,
@@ -75,29 +82,23 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
 
   private swipeGesture?: Gesture;
 
-  // 🟦 Onglet actif : 'videos' ou 'podcasts'
   activeTab: 'videos' | 'podcasts' = 'videos';
 
-  // 🎥 Vidéos YouTube
   videos: YoutubeVideo[] = [];
   isLoadingVideos = false;
   errorVideos: string | null = null;
 
-  // 🎧 Podcasts
   podcasts: PodcastEpisode[] = [];
   isLoadingPodcasts = false;
   errorPodcasts: string | null = null;
   podcastsLoadedOnce = false;
 
-  // Modal vidéo
   isVideoModalOpen = false;
   selectedVideo: YoutubeVideo | null = null;
 
-  // Modal podcast
   isPodcastModalOpen = false;
   selectedPodcast: PodcastEpisode | null = null;
 
-  // URLs des APIs PHP
   private readonly apiVideosUrl = 'https://glcbaudour.be/api/videos';
   private readonly apiPodcastsUrl = 'https://glcbaudour.be/api/podcasts';
 
@@ -109,6 +110,15 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.loadVideos();
+  }
+
+  // ✅ Pull-to-refresh : recharge l’onglet actif
+  doRefresh(event: RefresherCustomEvent) {
+    if (this.activeTab === 'videos') {
+      this.loadVideos(true, event);
+    } else {
+      this.loadPodcasts(true, event);
+    }
   }
 
   ngAfterViewInit(): void {
@@ -128,13 +138,10 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
           const deltaX = detail.deltaX;
           const deltaY = detail.deltaY;
 
-          // Mouvement surtout horizontal
           if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
             if (deltaX > 0) {
-              // 👉 swipe vers la droite : aller vers les podcasts
               this.switchToTab('videos');
             } else {
-              // 👈 swipe vers la gauche : revenir aux vidéos
               this.switchToTab('podcasts');
             }
           }
@@ -150,105 +157,119 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
     this.swipeGesture?.destroy();
   }
 
-  // Changement d’onglet (via swipe ou clic sur l’onglet)
   switchToTab(tab: 'videos' | 'podcasts') {
-    if (this.activeTab === tab) {
-      return;
-    }
+    if (this.activeTab === tab) return;
 
     this.activeTab = tab;
 
-    // Si on passe aux podcasts pour la première fois, on charge
     if (tab === 'podcasts' && !this.podcastsLoadedOnce) {
       this.loadPodcasts();
     }
   }
 
   // 🔹 Chargement des vidéos
-  loadVideos(): void {
-    this.isLoadingVideos = true;
+  loadVideos(forceRefresh = false, refresherEvent?: RefresherCustomEvent): void {
+    this.isLoadingVideos = !refresherEvent;
     this.errorVideos = null;
 
-    this.http.get<any>(this.apiVideosUrl).subscribe({
-      next: (data) => {
-        const arr: any[] = Array.isArray(data)
-          ? data
-          : typeof data === 'string'
-          ? JSON.parse(data)
-          : [];
+    const url = forceRefresh
+      ? `${this.apiVideosUrl}?ts=${Date.now()}`
+      : this.apiVideosUrl;
 
-        this.videos = arr.map((item) => {
-          const explicit =
-            item.thumbnailUrl ??
-            item.thumbnailurl ??
-            item.thumbnail_url ??
-            item.thumbnail ??
-            '';
+    this.http
+      .get<any>(url)
+      .pipe(
+        finalize(() => {
+          this.isLoadingVideos = false;
+          if (refresherEvent) refresherEvent.target.complete();
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          const arr: any[] = Array.isArray(data)
+            ? data
+            : typeof data === 'string'
+            ? JSON.parse(data)
+            : [];
 
-          const fallback =
-            explicit ||
-            Object.values(item).find(
-              (v) => typeof v === 'string' && v.includes('i.ytimg.com')
-            ) ||
-            '';
+          this.videos = arr.map((item) => {
+            const explicit =
+              item.thumbnailUrl ??
+              item.thumbnailurl ??
+              item.thumbnail_url ??
+              item.thumbnail ??
+              '';
 
-          const embedUrl = this.extractYoutubeEmbedUrl(item.link ?? '');
-          const video: YoutubeVideo = {
-            title: item.title ?? '',
-            link: item.link ?? '',
-            thumbnailUrl: fallback as string,
-            publishedAt: item.publishedAt ?? item.published_at ?? '',
-            embedUrl: embedUrl,
-          };
+            const fallback =
+              explicit ||
+              Object.values(item).find(
+                (v) => typeof v === 'string' && v.includes('i.ytimg.com')
+              ) ||
+              '';
 
-          return video;
-        });
+            const embedUrl = this.extractYoutubeEmbedUrl(item.link ?? '');
+            const video: YoutubeVideo = {
+              title: item.title ?? '',
+              link: item.link ?? '',
+              thumbnailUrl: fallback as string,
+              publishedAt: item.publishedAt ?? item.published_at ?? '',
+              embedUrl,
+            };
 
-        this.isLoadingVideos = false;
-      },
-      error: (err) => {
-        console.error('❌ Erreur lors du chargement des vidéos GLC Media :', err);
-        this.errorVideos = 'Erreur lors du chargement des vidéos.';
-        this.isLoadingVideos = false;
-      },
-    });
+            return video;
+          });
+        },
+        error: (err) => {
+          console.error('❌ Erreur lors du chargement des vidéos GLC Media :', err);
+          this.errorVideos = 'Erreur lors du chargement des vidéos.';
+        },
+      });
   }
 
   // 🔹 Chargement des podcasts
-  loadPodcasts(): void {
-    this.isLoadingPodcasts = true;
+  loadPodcasts(
+    forceRefresh = false,
+    refresherEvent?: RefresherCustomEvent
+  ): void {
+    this.isLoadingPodcasts = !refresherEvent;
     this.errorPodcasts = null;
 
-    this.http.get<any>(this.apiPodcastsUrl).subscribe({
-      next: (data) => {
-        const arr: any[] = Array.isArray(data)
-          ? data
-          : typeof data === 'string'
-          ? JSON.parse(data)
-          : [];
+    const url = forceRefresh
+      ? `${this.apiPodcastsUrl}?ts=${Date.now()}`
+      : this.apiPodcastsUrl;
 
-this.podcasts = arr.map((item) => {
-  const episode: PodcastEpisode = {
-    title: item.title ?? '',
-    description: item.description ?? '',
-    audioUrl: item.audioUrl ?? item.audio_url ?? '',
-    publishedAt: item.publishedAt ?? item.published_at ?? '',
-    imageUrl: item.imageUrl ?? item.image_url ?? '',   // ⬅️ ici
-  };
-  return episode;
-});
+    this.http
+      .get<any>(url)
+      .pipe(
+        finalize(() => {
+          this.isLoadingPodcasts = false;
+          if (refresherEvent) refresherEvent.target.complete();
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          const arr: any[] = Array.isArray(data)
+            ? data
+            : typeof data === 'string'
+            ? JSON.parse(data)
+            : [];
 
+          this.podcasts = arr.map((item) => ({
+            title: item.title ?? '',
+            description: item.description ?? '',
+            audioUrl: item.audioUrl ?? item.audio_url ?? '',
+            publishedAt: item.publishedAt ?? item.published_at ?? '',
+            imageUrl: item.imageUrl ?? item.image_url ?? '',
+          })) as PodcastEpisode[];
 
-        this.isLoadingPodcasts = false;
-        this.podcastsLoadedOnce = true;
-      },
-      error: (err) => {
-        console.error('❌ Erreur lors du chargement des podcasts :', err);
-        this.errorPodcasts = 'Erreur lors du chargement des podcasts.';
-        this.isLoadingPodcasts = false;
-        this.podcastsLoadedOnce = true;
-      },
-    });
+          this.podcastsLoadedOnce = true;
+        },
+        error: (err) => {
+          console.error('❌ Erreur lors du chargement des podcasts :', err);
+          this.errorPodcasts = 'Erreur lors du chargement des podcasts.';
+          this.podcastsLoadedOnce = true;
+        },
+      });
   }
 
   private extractYoutubeEmbedUrl(url: string): SafeResourceUrl {

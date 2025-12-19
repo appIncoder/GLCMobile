@@ -1,0 +1,51 @@
+.pasteur-slides {
+  width: 100%;
+}
+
+.pasteur-slide {
+  width: 100%;
+  padding-bottom: 8px;
+}
+
+.media-swipe-hint {
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin: 6px 0 10px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.media-swipe-hint .arrows {
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.slide-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0 6px;
+}
+
+.slide-indicator .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  opacity: 0.35;
+  background: currentColor;
+}
+
+.slide-indicator .dot.active {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.slide-count {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin-left: 6px;
+}

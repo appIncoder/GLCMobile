@@ -1,10 +1,11 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
+// The list of file replacements can be found in `angular.json`. 
 
 export const environment = {
   production: false,
-  apiUrl: 'https://glcbaudour.be/api'  // Use local proxy during development (proxy.conf.json redirects this to https://glcbaudour.be/api)
+  apiUrl: 'https://glcbaudour.be/api',
+  stripePublishableKey: 'pk_live_51OGgDFGWceWw57uteDY0deF3kdb47GEkvmRpBkllDVuvWyeb0Kpmqnw0RyULDkrtB58JLfsapwBs2Hplw8UqNnVm00Y36xPSUY',
 };
 
 /*

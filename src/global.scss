@@ -114,3 +114,6 @@ ion-menu {
 ion-menu ion-content {
   --background: var(--menu-background);
 }
+.rich-text p {
+  color: var(--p-text-color) !important;
+}

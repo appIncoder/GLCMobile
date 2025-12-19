@@ -20,7 +20,12 @@ import {
   IonCardHeader,
   IonModal,
   IonImg,
+  IonRefresher,
+  IonRefresherContent,
 } from '@ionic/angular/standalone';
+
+import type { RefresherCustomEvent } from '@ionic/angular';
+import { finalize } from 'rxjs/operators';
 
 import { addIcons } from 'ionicons';
 import {
@@ -59,6 +64,11 @@ interface Activity {
     IonMenuButton,
     IonTitle,
     IonContent,
+
+    // ✅ refresher
+    IonRefresher,
+    IonRefresherContent,
+
     IonButton,
     IonLabel,
     IonIcon,
@@ -76,7 +86,6 @@ interface Activity {
 export class ActivitesPage implements OnInit {
   private readonly ACTIVITIES_API_URL = 'https://glcbaudour.be/api/activities';
 
-  // ✅ URL image par défaut
   private readonly DEFAULT_IMAGE_URL =
     'https://glcbaudour.be/wp-content/uploads/2024/04/cropped-en-tete-2.png';
 
@@ -110,36 +119,53 @@ export class ActivitesPage implements OnInit {
     this.loadActivities();
   }
 
-  private loadActivities(): void {
-    this.isLoading = true;
+  // ✅ Pull-to-refresh (swipe de haut en bas)
+  doRefresh(event: RefresherCustomEvent) {
+    this.loadActivities(true, event);
+  }
+
+  private loadActivities(
+    forceRefresh = false,
+    refresherEvent?: RefresherCustomEvent
+  ): void {
+    // Si c'est un pull-to-refresh, évite de montrer un "gros loading" global
+    this.isLoading = !refresherEvent;
     this.loadError = null;
 
-    this.http.get<{ data: Activity[] }>(this.ACTIVITIES_API_URL).subscribe({
-      next: (res) => {
-        const rawActivities = res?.data || [];
+    const url = forceRefresh
+      ? `${this.ACTIVITIES_API_URL}?ts=${Date.now()}`
+      : this.ACTIVITIES_API_URL;
 
-        // ✅ On injecte l’image par défaut si le champ image est vide / null / inexistant
-        this.activities = rawActivities.map((a: any) => {
-          const image =
-            a?.image && String(a.image).trim() !== ''
-              ? a.image
-              : this.DEFAULT_IMAGE_URL;
+    this.http
+      .get<{ data: Activity[] }>(url)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          if (refresherEvent) refresherEvent.target.complete(); // stop animation
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          const rawActivities = res?.data || [];
 
-          return {
-            ...a,
-            image,
-          } as Activity;
-        });
+          this.activities = rawActivities.map((a: any) => {
+            const image =
+              a?.image && String(a.image).trim() !== ''
+                ? a.image
+                : this.DEFAULT_IMAGE_URL;
 
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Erreur lors du chargement des activités :', err);
-        this.loadError =
-          'Impossible de charger les activités pour le moment. Veuillez réessayer plus tard.';
-        this.isLoading = false;
-      },
-    });
+            return {
+              ...a,
+              image,
+            } as Activity;
+          });
+        },
+        error: (err) => {
+          console.error('Erreur lors du chargement des activités :', err);
+          this.loadError =
+            'Impossible de charger les activités pour le moment. Veuillez réessayer plus tard.';
+        },
+      });
   }
 
   openActivityDetails(activity: Activity): void {

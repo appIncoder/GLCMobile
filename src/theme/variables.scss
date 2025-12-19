@@ -6,6 +6,9 @@
 // THÈME PAR DÉFAUT : DARK
 // ==========================
 :root {
+
+  --p-text-color: #f9fafb; /* couleur "light" appliquée aux <p> en dark */
+
   --ion-text-color-secondary: #e5e7eb; /* Très lisible en dark */
 
   // Gradient de fond (bleus foncés : plus foncé en haut, moins foncé en bas)
@@ -49,6 +52,8 @@
 // THÈME LIGHT (body.light-theme)
 // ==========================
 body.light-theme {
+ --p-text-color: #111827; /* couleur "dark" appliquée aux <p> en light */
+
   --ion-text-color-secondary: #374151; /* Gris foncé lisible en light */
 
   // Gradient vertical gris clair -> blanc
@@ -84,4 +89,21 @@ body.light-theme {
 
   // MENU LIGHT
   --menu-background: rgba(255, 255, 255, 0.98);
+}
+/* Le swiper doit pouvoir prendre la hauteur dispo */
+.pasteur-swiper {
+  height: 100%;
+}
+
+/* Chaque slide peut scroller verticalement */
+.pasteur-slide-scroll {
+  height: calc(100vh - var(--ion-safe-area-top) - 56px); /* 56px ~ hauteur toolbar */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 24px;
+}
+
+/* Optionnel : évite que swiper "vole" le scroll vertical */
+.pasteur-slide-scroll {
+  touch-action: pan-y;
 }

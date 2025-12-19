@@ -10,9 +10,9 @@ import {
   IonContent,
   IonImg,
   IonCard,
-  IonCardContent,
-} from '@ionic/angular/standalone';
+  IonCardContent, IonRefresherContent, IonRefresher } from '@ionic/angular/standalone';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import type { RefresherCustomEvent } from '@ionic/angular';
 
 interface ActuItem {
   id: number;
@@ -26,7 +26,7 @@ interface ActuItem {
   templateUrl: './accueil.page.html',
   styleUrls: ['./accueil.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonRefresher, IonRefresherContent, 
     CommonModule,
     IonHeader,
     IonToolbar,
@@ -53,41 +53,47 @@ export class AccueilPage implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-    this.folder = this.activatedRoute.snapshot.paramMap.get('id') as string;
+  ionViewWillEnter() {
     this.loadActu();
   }
 
-  private loadActu() {
-    this.isLoading = true;
+  ngOnInit() {
+    this.loadActu();
+  }
+
+  async doRefresh(event: RefresherCustomEvent) {
+    try {
+      await this.loadActu(true); // true => force refresh
+    } finally {
+      event.target.complete(); // stop l’animation du refresher
+    }
+  }
+
+  private loadActu(force = false): Promise<void> {
+    this.isLoading = !force; // évite double spinner si pull-to-refresh
     this.error = undefined;
 
-    this.http.get<ActuItem[] | any>('https://glcbaudour.be/api/actu').subscribe({
-      next: (data) => {
-        console.log('Réponse API /api/actu =', data);
+    const url = force
+      ? `https://glcbaudour.be/api/actu?ts=${Date.now()}`
+      : `https://glcbaudour.be/api/actu`;
 
-        // 🔹 Cas 1 : l’API renvoie directement un tableau
-        if (Array.isArray(data)) {
-          this.actuList = data;
-        }
-        // 🔹 Cas 2 : l’API renvoie un objet du type { items: [...] } ou { data: [...] }
-        else if (data && Array.isArray(data.items)) {
-          this.actuList = data.items;
-        } else if (data && Array.isArray(data.data)) {
-          this.actuList = data.data;
-        } else {
-          // Rien d’itérable -> on met un tableau vide
-          console.warn('Format de réponse non supporté, actuList vide.');
-          this.actuList = [];
-        }
-
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Erreur lors de la récupération des actus', err);
-        this.error = 'Impossible de charger les actualités pour le moment.';
-        this.isLoading = false;
-      },
+    return new Promise((resolve) => {
+      this.http.get<ActuItem[] | any>(url).subscribe({
+        next: (data) => {
+          if (Array.isArray(data)) this.actuList = data;
+          else if (data && Array.isArray(data.items)) this.actuList = data.items;
+          else if (data && Array.isArray(data.data)) this.actuList = data.data;
+          else this.actuList = [];
+          this.isLoading = false;
+          resolve();
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération des actus', err);
+          this.error = 'Impossible de charger les actualités pour le moment.';
+          this.isLoading = false;
+          resolve(); // on resolve quand même pour arrêter le refresher
+        },
+      });
     });
   }
 }

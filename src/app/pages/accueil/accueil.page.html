@@ -3,11 +3,14 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Accueil</ion-title>
+    <ion-title>Page d'accueil</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true"  scroll-y="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <div>
     <div>
       <ion-img src="assets/cropped-en-tete-2.png" alt="Logo du GLC Baudour" class="home-logo" />

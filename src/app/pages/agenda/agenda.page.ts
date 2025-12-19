@@ -24,17 +24,21 @@ import {
   IonList,
   IonItem,
   IonImg,
+  IonRefresher,
+  IonRefresherContent,
 } from '@ionic/angular/standalone';
 import { Gesture, GestureController } from '@ionic/angular';
+import type { RefresherCustomEvent } from '@ionic/angular';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { finalize } from 'rxjs/operators';
 
 interface CalendarEvent {
   title: string;
   description?: string;
   color?: string;
   date: Date;
-  time?: string;      // ⬅️ nouvel attribut
-  imageUrl?: string;  // ⬅️ nouvel attribut
+  time?: string;
+  imageUrl?: string;
 }
 
 interface CalendarDay {
@@ -44,26 +48,13 @@ interface CalendarDay {
   events: CalendarEvent[];
 }
 
-/**
- * Structure attendue depuis l'API /api/agenda
- * (à adapter en fonction de ton backend réel)
- *
- * Exemple de payload pour un élément :
- * {
- *   "title": "Célébration du dimanche",
- *   "date": "2025-12-16",
- *   "time": "10:00",
- *   "image_url": "https://glcbaudour.be/images/mon-image.jpg",
- *   "description": "..."
- * }
- */
 interface AgendaApiItem {
   title: string;
   description?: string;
   color?: string;
-  date: string;      // ISO string ou 'YYYY-MM-DD'
-  time?: string;     // ⬅️ récupéré depuis le backend
-  image_url?: string; // ⬅️ récupéré depuis le backend
+  date: string;
+  time?: string;
+  image_url?: string;
 }
 
 @Component({
@@ -79,6 +70,11 @@ interface AgendaApiItem {
     IonMenuButton,
     IonTitle,
     IonContent,
+
+    // ✅ refresher
+    IonRefresher,
+    IonRefresherContent,
+
     IonModal,
     IonCard,
     IonCardHeader,
@@ -89,7 +85,7 @@ interface AgendaApiItem {
     IonList,
     IonItem,
     IonImg,
-    HttpClientModule, // ⬅️ nécessaire pour les appels HTTP dans ce composant
+    HttpClientModule,
   ],
 })
 export class AgendaPage implements OnInit, AfterViewInit, OnDestroy {
@@ -109,11 +105,12 @@ export class AgendaPage implements OnInit, AfterViewInit, OnDestroy {
 
   swipeDirection: 'left' | 'right' | null = null;
 
-  // 🔹 événements venant du backend
   private events: CalendarEvent[] = [];
 
   isLoadingEvents = false;
   loadError?: string;
+
+  private readonly AGENDA_API_URL = 'https://glcbaudour.be/api/agenda';
 
   constructor(
     private gestureCtrl: GestureController,
@@ -122,10 +119,13 @@ export class AgendaPage implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.updateMonthLabel();
-    // On affiche déjà un calendrier vide
-    this.generateCalendarDays();
-    // Puis on charge les événements depuis l’API
-    this.loadEventsFromBackend();
+    this.generateCalendarDays(); // calendrier vide
+    this.loadEventsFromBackend(); // 1er chargement
+  }
+
+  // ✅ Pull-to-refresh (swipe vertical haut -> bas)
+  doRefresh(event: RefresherCustomEvent) {
+    this.loadEventsFromBackend(true, event);
   }
 
   ngAfterViewInit(): void {
@@ -145,19 +145,15 @@ export class AgendaPage implements OnInit, AfterViewInit, OnDestroy {
           const deltaX = detail.deltaX;
           const deltaY = detail.deltaY;
 
-          // On vérifie que le mouvement est surtout horizontal
           if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
             if (deltaX < 0) {
-              // swipe vers la gauche -> mois suivant
               this.swipeDirection = 'left';
               this.nextMonth();
             } else {
-              // swipe vers la droite -> mois précédent
               this.swipeDirection = 'right';
               this.prevMonth();
             }
 
-            // On enlève l’effet visuel après un court délai
             setTimeout(() => {
               this.swipeDirection = null;
             }, 250);
@@ -175,28 +171,34 @@ export class AgendaPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // 🔹 Chargement des événements depuis le backend
-  private loadEventsFromBackend(): void {
-    this.isLoadingEvents = true;
+  private loadEventsFromBackend(
+    forceRefresh = false,
+    refresherEvent?: RefresherCustomEvent
+  ): void {
+    this.isLoadingEvents = !refresherEvent; // évite double spinner si pull-to-refresh
     this.loadError = undefined;
 
+    const url = forceRefresh
+      ? `${this.AGENDA_API_URL}?ts=${Date.now()}`
+      : this.AGENDA_API_URL;
+
     this.http
-      .get<AgendaApiItem[] | any>('https://glcbaudour.be/api/agenda')
+      .get<AgendaApiItem[] | any>(url)
+      .pipe(
+        finalize(() => {
+          this.isLoadingEvents = false;
+          if (refresherEvent) refresherEvent.target.complete();
+        })
+      )
       .subscribe({
         next: (data) => {
-          console.log('Réponse /api/agenda :', data);
-
           let items: AgendaApiItem[] = [];
 
-          // Cas 1 : l’API renvoie directement un tableau
           if (Array.isArray(data)) {
             items = data as AgendaApiItem[];
-          }
-          // Cas 2 : format { items: [...] }
-          else if (data && Array.isArray(data.items)) {
+          } else if (data && Array.isArray(data.items)) {
             items = data.items as AgendaApiItem[];
-          }
-          // Cas 3 : format { data: [...] }
-          else if (data && Array.isArray(data.data)) {
+          } else if (data && Array.isArray(data.data)) {
             items = data.data as AgendaApiItem[];
           } else {
             console.warn('Format de réponse inattendu pour /api/agenda');
@@ -208,20 +210,18 @@ export class AgendaPage implements OnInit, AfterViewInit, OnDestroy {
             description: it.description,
             color: it.color,
             date: new Date(it.date),
-            time: it.time,               // ⬅️ mappage du champ "time"
-            imageUrl: it.image_url,      // ⬅️ mappage du champ "image_url"
+            time: it.time,
+            imageUrl: it.image_url,
           }));
 
-          this.isLoadingEvents = false;
-          // On régénère la grille avec les événements récupérés
+          // ✅ Important : regénère la grille avec les événements
           this.generateCalendarDays();
         },
         error: (err) => {
           console.error('Erreur lors du chargement de /api/agenda', err);
-          this.isLoadingEvents = false;
-          this.loadError =
-            "Impossible de charger l'agenda pour le moment.";
-          // On garde quand même un calendrier vide
+          this.loadError = "Impossible de charger l'agenda pour le moment.";
+
+          // On garde quand même un calendrier (vide ou ancien)
           this.generateCalendarDays();
         },
       });
@@ -268,12 +268,11 @@ export class AgendaPage implements OnInit, AfterViewInit, OnDestroy {
     const firstOfMonth = new Date(year, month, 1);
     const lastOfMonth = new Date(year, month + 1, 0);
 
-    const startDayOfWeek = (firstOfMonth.getDay() + 6) % 7; // Lundi = 0
+    const startDayOfWeek = (firstOfMonth.getDay() + 6) % 7;
     const daysInMonth = lastOfMonth.getDate();
 
     const days: CalendarDay[] = [];
 
-    // Jours du mois précédent pour compléter la 1ère ligne
     for (let i = 0; i < startDayOfWeek; i++) {
       const date = new Date(year, month, 1 - (startDayOfWeek - i));
       days.push({
@@ -284,7 +283,6 @@ export class AgendaPage implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
-    // Jours du mois courant
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(year, month, d);
       days.push({
@@ -295,7 +293,6 @@ export class AgendaPage implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
-    // Compléter avec les jours du mois suivant jusqu’à un multiple de 7
     while (days.length % 7 !== 0) {
       const lastDate = days[days.length - 1].date;
       const nextDate = new Date(
