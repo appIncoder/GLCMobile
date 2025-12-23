@@ -26,17 +26,17 @@ import {
 
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Gesture, GestureController } from '@ionic/angular';
 import type { RefresherCustomEvent } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
+
+import { Browser } from '@capacitor/browser';
 
 export interface YoutubeVideo {
   title: string;
   link: string;
   thumbnailUrl: string;
   publishedAt: string;
-  embedUrl?: SafeResourceUrl;
 }
 
 export interface PodcastEpisode {
@@ -60,7 +60,6 @@ export interface PodcastEpisode {
     IonTitle,
     IonContent,
 
-    // ✅ refresher
     IonRefresher,
     IonRefresherContent,
 
@@ -93,9 +92,6 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
   errorPodcasts: string | null = null;
   podcastsLoadedOnce = false;
 
-  isVideoModalOpen = false;
-  selectedVideo: YoutubeVideo | null = null;
-
   isPodcastModalOpen = false;
   selectedPodcast: PodcastEpisode | null = null;
 
@@ -104,7 +100,6 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private http: HttpClient,
-    private sanitizer: DomSanitizer,
     private gestureCtrl: GestureController
   ) {}
 
@@ -112,7 +107,6 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
     this.loadVideos();
   }
 
-  // ✅ Pull-to-refresh : recharge l’onglet actif
   doRefresh(event: RefresherCustomEvent) {
     if (this.activeTab === 'videos') {
       this.loadVideos(true, event);
@@ -123,10 +117,7 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     const el = this.mediaWrapper?.nativeElement;
-    if (!el) {
-      console.warn('mediaWrapper non trouvé');
-      return;
-    }
+    if (!el) return;
 
     this.swipeGesture = this.gestureCtrl.create(
       {
@@ -139,11 +130,8 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
           const deltaY = detail.deltaY;
 
           if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
-            if (deltaX > 0) {
-              this.switchToTab('videos');
-            } else {
-              this.switchToTab('podcasts');
-            }
+            if (deltaX > 0) this.switchToTab('videos');
+            else this.switchToTab('podcasts');
           }
         },
       },
@@ -167,14 +155,11 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // 🔹 Chargement des vidéos
   loadVideos(forceRefresh = false, refresherEvent?: RefresherCustomEvent): void {
     this.isLoadingVideos = !refresherEvent;
     this.errorVideos = null;
 
-    const url = forceRefresh
-      ? `${this.apiVideosUrl}?ts=${Date.now()}`
-      : this.apiVideosUrl;
+    const url = forceRefresh ? `${this.apiVideosUrl}?ts=${Date.now()}` : this.apiVideosUrl;
 
     this.http
       .get<any>(url)
@@ -207,16 +192,12 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
               ) ||
               '';
 
-            const embedUrl = this.extractYoutubeEmbedUrl(item.link ?? '');
-            const video: YoutubeVideo = {
+            return {
               title: item.title ?? '',
               link: item.link ?? '',
               thumbnailUrl: fallback as string,
               publishedAt: item.publishedAt ?? item.published_at ?? '',
-              embedUrl,
-            };
-
-            return video;
+            } as YoutubeVideo;
           });
         },
         error: (err) => {
@@ -226,17 +207,11 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  // 🔹 Chargement des podcasts
-  loadPodcasts(
-    forceRefresh = false,
-    refresherEvent?: RefresherCustomEvent
-  ): void {
+  loadPodcasts(forceRefresh = false, refresherEvent?: RefresherCustomEvent): void {
     this.isLoadingPodcasts = !refresherEvent;
     this.errorPodcasts = null;
 
-    const url = forceRefresh
-      ? `${this.apiPodcastsUrl}?ts=${Date.now()}`
-      : this.apiPodcastsUrl;
+    const url = forceRefresh ? `${this.apiPodcastsUrl}?ts=${Date.now()}` : this.apiPodcastsUrl;
 
     this.http
       .get<any>(url)
@@ -272,35 +247,17 @@ export class GlcmediaPage implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  private extractYoutubeEmbedUrl(url: string): SafeResourceUrl {
-    let videoId = '';
+  // ✅ Ouverture YouTube dans le navigateur système (iOS-safe)
+  async openYoutubeVideo(video: YoutubeVideo) {
+    const url = (video?.link || '').trim();
+    if (!url) return;
 
     try {
-      if (url.includes('youtube.com/watch')) {
-        videoId = new URL(url).searchParams.get('v') || '';
-      } else if (url.includes('youtu.be/')) {
-        videoId = url.split('youtu.be/')[1]?.split('?')[0] || '';
-      }
-    } catch {
-      videoId = '';
+      await Browser.open({ url });
+    } catch (e) {
+      console.error('Impossible d’ouvrir YouTube:', e);
+      // Optionnel: afficher un toast si tu en utilises déjà un ailleurs
     }
-
-    if (videoId) {
-      return this.sanitizer.bypassSecurityTrustResourceUrl(
-        `https://www.youtube.com/embed/${videoId}?autoplay=1`
-      );
-    }
-    return this.sanitizer.bypassSecurityTrustResourceUrl('');
-  }
-
-  openVideoPlayer(video: YoutubeVideo) {
-    this.selectedVideo = video;
-    this.isVideoModalOpen = true;
-  }
-
-  closeVideoPlayer() {
-    this.isVideoModalOpen = false;
-    this.selectedVideo = null;
   }
 
   openPodcastPlayer(podcast: PodcastEpisode) {

@@ -23,11 +23,26 @@ import {
   IonSpinner,
 } from '@ionic/angular/standalone';
 
-import { StripeNativeService } from '../../services/stripe-native.service';
+import { Browser } from '@capacitor/browser';
+import { HttpClient } from '@angular/common/http';
+import { finalize } from 'rxjs/operators';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 interface PaymentOption {
   amount: number;
   label: string;
+}
+
+interface ActivityDto {
+  id?: number;
+  title?: string;
+  image?: string;
+  text?: string; // HTML
+}
+
+interface ApiResponse<T> {
+  data: T[];
+  count: number;
 }
 
 @Component({
@@ -60,10 +75,20 @@ interface PaymentOption {
 })
 export class KalukalangaPage implements OnInit {
   public folder!: string;
-
   private activatedRoute = inject(ActivatedRoute);
-  private stripeNative = inject(StripeNativeService);
 
+  // ✅ API
+  private readonly apiUrl = 'https://glcbaudour.be/api/kalukalanga';
+
+  // ✅ Contenu dynamique (fallbacks)
+  pageTitle = 'La mission Kalukalanga';
+  heroImageUrl =
+    'https://glcbaudour.be/wp-content/uploads/2024/12/WhatsApp-Image-2024-11-27-a-10.16.27_1a955f7a.jpg';
+  pageHtml: SafeHtml = '';
+  isLoadingContent = false;
+  contentError: string | null = null;
+
+  // ✅ Modal Don
   isPaymentModalOpen = false;
   selectedAmount: number | null = null;
 
@@ -72,19 +97,56 @@ export class KalukalangaPage implements OnInit {
   paymentSuccessMessage = '';
 
   paymentOptions: PaymentOption[] = [
-    { amount: 1, label: '1€' },
-    { amount: 2, label: '2€' },
     { amount: 5, label: '5€' },
     { amount: 10, label: '10€' },
     { amount: 20, label: '20€' },
+    { amount: 50, label: '50€' },
+    { amount: 100, label: '100€' },
   ];
+
+  constructor(
+    private http: HttpClient,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngOnInit() {
     this.folder = this.activatedRoute.snapshot.paramMap.get('id') as string;
+    this.loadPageContent();
+  }
+
+  loadPageContent(forceRefresh = false) {
+    this.isLoadingContent = true;
+    this.contentError = null;
+
+    const url = forceRefresh ? `${this.apiUrl}?ts=${Date.now()}` : this.apiUrl;
+
+    this.http
+      .get<ApiResponse<ActivityDto>>(url)
+      .pipe(finalize(() => (this.isLoadingContent = false)))
+      .subscribe({
+        next: (res) => {
+          const item = res?.data?.[0];
+          if (!item) {
+            this.contentError = 'Contenu indisponible.';
+            return;
+          }
+
+          if (item.title) this.pageTitle = item.title;
+          if (item.image) this.heroImageUrl = item.image;
+
+          const html = item.text ?? '';
+          this.pageHtml = this.sanitizer.bypassSecurityTrustHtml(html);
+        },
+        error: (err) => {
+          console.error('Erreur chargement contenu kalukalanga:', err);
+          this.contentError = "Impossible de charger le contenu pour le moment.";
+        },
+      });
   }
 
   doRefresh(event: RefresherCustomEvent) {
     this.resetPaymentState();
+    this.loadPageContent(true);
     event.target.complete();
   }
 
@@ -93,6 +155,16 @@ export class KalukalangaPage implements OnInit {
     this.paymentErrorMessage = '';
     this.paymentSuccessMessage = '';
     this.selectedAmount = null;
+  }
+
+  async openDonationPage(amount?: number | null) {
+    const baseUrl = 'https://glcbaudour.be/don/';
+    const url =
+      amount && amount > 0
+        ? `${baseUrl}?amount=${encodeURIComponent(String(amount))}`
+        : baseUrl;
+
+    await Browser.open({ url });
   }
 
   openPaymentModal() {
@@ -127,23 +199,11 @@ export class KalukalangaPage implements OnInit {
     this.paymentSuccessMessage = '';
 
     try {
-      // Tu peux éventuellement passer des infos donor si tu ajoutes un formulaire plus tard
-      const res = await this.stripeNative.payDonation(this.selectedAmount);
-
-      if (res.status === 'succeeded') {
-        this.paymentSuccessMessage = `Merci ! Votre don de €${this.selectedAmount} a été effectué.`;
-        setTimeout(() => this.closePaymentModal(), 1500);
-        return;
-      }
-
-      if (res.status === 'canceled') {
-        this.paymentErrorMessage = 'Paiement annulé.';
-        return;
-      }
-
-      this.paymentErrorMessage = 'Le paiement a échoué. Veuillez réessayer.';
+      await this.openDonationPage(this.selectedAmount);
+      this.closePaymentModal();
     } catch (e: any) {
-      this.paymentErrorMessage = e?.message ?? 'Le paiement a échoué. Veuillez réessayer.';
+      this.paymentErrorMessage =
+        e?.message ?? 'Impossible d’ouvrir la page de don.';
     } finally {
       this.isProcessingPayment = false;
     }

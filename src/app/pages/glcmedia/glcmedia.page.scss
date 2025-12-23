@@ -25,7 +25,6 @@
 }
 
 .media-tab.active {
-  /* Couleur d’accent dépendante du thème */
   background: var(--ion-color-step-400);
   color: var(--ion-text-color);
   border-color: var(--ion-text-color);
@@ -34,7 +33,6 @@
 .media-swipe-hint {
   color: var(--ion-text-color-secondary);
 }
-
 
 .media-intro {
   font-size: 0.9rem;
@@ -47,7 +45,6 @@
   color: var(--ion-text-color);
 
   &.error {
-    /* On garde un rouge fixe, c’est lisible dans les deux modes */
     color: #f97373;
   }
 }
@@ -69,7 +66,6 @@
 }
 
 /* VIDÉOS */
-
 .video-list {
   display: flex;
   flex-direction: column;
@@ -81,8 +77,6 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-
-  /* Utilise les couleurs de “card” du thème global */
   background: var(--card-background);
   border-radius: 16px;
   overflow: hidden;
@@ -92,7 +86,7 @@
 .video-thumbnail {
   width: 100%;
   height: auto;
-  aspect-ratio: 16 / 9; /* Format YouTube */
+  aspect-ratio: 16 / 9;
   object-fit: cover;
   display: block;
 }
@@ -117,10 +111,10 @@ ion-card-content {
 .video-header {
   display: flex;
   flex-direction: column;
+  gap: 6px;
 }
 
 /* PODCASTS */
-
 .podcast-list {
   display: flex;
   flex-direction: column;
@@ -153,24 +147,6 @@ ion-card-content {
   font-size: 0.85rem;
   color: var(--ion-text-color);
   margin-bottom: 8px;
-}
-
-/* Modal vidéo */
-.video-player-modal {
-  /* Avant : --background: #000; */
-  /* Maintenant : suit le thème global */
-  --background: var(--app-background);
-}
-
-.video-player-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-}
-
-.video-player-container {
-  padding: 8px 16px 16px;
 }
 
 /* Modal podcast */

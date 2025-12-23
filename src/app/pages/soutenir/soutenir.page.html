@@ -3,18 +3,18 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Soutenir le GLC Baudour</ion-title>
+    <ion-title>{{ pageTitle }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="soutenir-page">
   <div class="soutenir-container">
-    <!-- Image Card -->
-    <ion-card button>
+    <!-- Image Card (clic = ouvre la page web de don) -->
+    <ion-card button (click)="openDonationPage()">
       <ion-card-content>
         <ion-img
-          src="assets/don-e1591375718487.jpg"
-          alt="Logo GLC Baudour"
+          [src]="heroImageUrl"
+          [alt]="pageTitle"
           class="soutenir-logo"
         />
       </ion-card-content>
@@ -23,21 +23,10 @@
     <!-- Description Card -->
     <ion-card>
       <ion-card-content>
-        <p>
-          Soutenir le GLC Baudour financièrement est bien plus qu'une simple donation. C'est un acte d'adoration,
-          une expression de votre foi et de votre engagement envers la mission de partage de l'Évangile.
-          Chaque contribution, quelle que soit son montant, aide à:
-        </p>
-        <ul>
-          <li>Financer nos activités spirituelles et communautaires</li>
-          <li>Soutenir nos missions humanitaires</li>
-          <li>Développer nos programmes d'éducation et de formation</li>
-          <li>Étendre notre rayonnement dans la région</li>
-        </ul>
-        <p>
-          En donnant, vous devenez partenaire de Dieu dans son œuvre. Votre générosité inspire d'autres
-          et transforme des vies. Nous vous remercions sincèrement pour votre soutien.
-        </p>
+        <div *ngIf="isLoadingContent">Chargement…</div>
+        <div *ngIf="contentError" class="error-box"><p>{{ contentError }}</p></div>
+
+        <div *ngIf="!isLoadingContent && !contentError" [innerHTML]="pageHtml"></div>
       </ion-card-content>
     </ion-card>
 
@@ -52,7 +41,7 @@
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-title>Paiement sécurisé</ion-title>
+          <ion-title>Don</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="closePaymentModal()" [disabled]="isProcessingPayment">
               Fermer
@@ -68,7 +57,6 @@
               Sélectionnez un montant pour soutenir le GLC Baudour
             </p>
 
-            <!-- Amount Selection -->
             <ion-grid>
               <ion-row>
                 <ion-col size="6" *ngFor="let option of paymentOptions">
@@ -86,29 +74,26 @@
               </ion-row>
             </ion-grid>
 
-            <!-- Amount recap -->
-            <div *ngIf="selectedAmount && !paymentSuccessMessage" class="amount-display">
+            <div *ngIf="selectedAmount" class="amount-display">
               <p class="amount-label">Montant</p>
               <p class="amount-value">€{{ selectedAmount }}.00</p>
             </div>
 
-            <!-- Pay with PaymentSheet -->
             <ion-button
               expand="block"
               color="primary"
               class="payment-submit-btn"
-              [disabled]="!selectedAmount || isProcessingPayment || !!paymentSuccessMessage"
+              [disabled]="!selectedAmount || isProcessingPayment"
               (click)="payNow()"
             >
-              <ng-container *ngIf="!isProcessingPayment">Payer</ng-container>
+              <ng-container *ngIf="!isProcessingPayment">Continuer vers le site</ng-container>
               <ng-container *ngIf="isProcessingPayment">
                 <ion-spinner name="circular" style="width: 20px; height: 20px; margin-right: 8px;"></ion-spinner>
-                Traitement...
+                Ouverture...
               </ng-container>
             </ion-button>
 
-            <!-- Error Message -->
-            <div *ngIf="paymentErrorMessage && !paymentSuccessMessage" class="error-box">
+            <div *ngIf="paymentErrorMessage" class="error-box">
               <p>{{ paymentErrorMessage }}</p>
               <ion-button
                 expand="block"
@@ -120,12 +105,6 @@
               >
                 Retour
               </ion-button>
-            </div>
-
-            <!-- Success Message -->
-            <div *ngIf="paymentSuccessMessage" class="success-box">
-              <p class="success-icon">✓</p>
-              <p class="success-message">{{ paymentSuccessMessage }}</p>
             </div>
           </ion-card-content>
         </ion-card>

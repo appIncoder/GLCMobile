@@ -8,11 +8,11 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="glcmedia-page">
-    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <div #mediaWrapper class="media-container">
 
+  <div #mediaWrapper class="media-container">
     <!-- Onglets + indication swipe -->
     <div class="media-tabs">
       <button
@@ -41,8 +41,7 @@
       <!-- 🟥 Panneau VIDÉOS -->
       <div class="media-panel videos-panel">
         <div class="media-intro">
-          Retrouvez ici les dernières vidéos publiées sur la chaîne YouTube du
-          GLC Baudour.
+          Retrouvez ici les dernières vidéos publiées sur la chaîne YouTube du GLC Baudour.
         </div>
 
         <!-- État de chargement -->
@@ -61,7 +60,7 @@
             class="video-card"
             *ngFor="let video of videos"
             button
-            (click)="openVideoPlayer(video)"
+            (click)="openYoutubeVideo(video)"
           >
             <ion-img
               class="video-thumbnail"
@@ -75,6 +74,15 @@
                 <p class="video-date w-100">
                   {{ video.publishedAt | date: 'longDate' }}
                 </p>
+
+                <!-- Optionnel : bouton explicite (évite d’ouvrir si l’utilisateur voulait juste scroller) -->
+                <ion-button
+                  fill="outline"
+                  size="small"
+                  (click)="openYoutubeVideo(video); $event.stopPropagation()"
+                >
+                  Ouvrir sur YouTube
+                </ion-button>
               </div>
             </ion-card-content>
           </ion-card>
@@ -98,70 +106,36 @@
         </div>
 
         <!-- Liste des podcasts -->
-<div *ngIf="!isLoadingPodcasts && !errorPodcasts" class="podcast-list">
-  <ion-card class="podcast-card" *ngFor="let p of podcasts">
+        <div *ngIf="!isLoadingPodcasts && !errorPodcasts" class="podcast-list">
+          <ion-card class="podcast-card" *ngFor="let p of podcasts">
 
-    <!-- 🔹 Image du podcast -->
-    <ion-img
-      *ngIf="p.imageUrl"
-      [src]="p.imageUrl"
-      [alt]="p.title"
-      class="podcast-thumbnail"
-    ></ion-img>
+            <ion-img
+              *ngIf="p.imageUrl"
+              [src]="p.imageUrl"
+              [alt]="p.title"
+              class="podcast-thumbnail"
+            ></ion-img>
 
-    <ion-card-content>
-      <h2 class="podcast-title">{{ p.title }}</h2>
-      <p class="podcast-date  w-100">
-        {{ p.publishedAt | date: 'longDate' }}
-      </p>
+            <ion-card-content>
+              <h2 class="podcast-title">{{ p.title }}</h2>
+              <p class="podcast-date w-100">
+                {{ p.publishedAt | date: 'longDate' }}
+              </p>
 
-
-      <ion-button
-        fill="outline"
-        size="small"
-        (click)="openPodcastPlayer(p)"
-      >
-        Écouter le podcast
-      </ion-button>
-    </ion-card-content>
-  </ion-card>
-</div>
-
+              <ion-button
+                fill="outline"
+                size="small"
+                (click)="openPodcastPlayer(p)"
+              >
+                Écouter le podcast
+              </ion-button>
+            </ion-card-content>
+          </ion-card>
+        </div>
       </div>
 
     </div>
   </div>
-
-  <!-- Modal vidéo -->
-  <ion-modal
-    [isOpen]="isVideoModalOpen"
-    (didDismiss)="closeVideoPlayer()"
-    [breakpoints]="[0, 0.5, 1]"
-    [initialBreakpoint]="1"
-    handleBehavior="cycle"
-  >
-    <ng-template>
-      <ion-content class="video-player-modal">
-        <div class="video-player-header">
-          <h2>{{ selectedVideo?.title }}</h2>
-          <ion-button fill="clear" (click)="closeVideoPlayer()">
-            Fermer
-          </ion-button>
-        </div>
-
-        <div class="video-player-container" *ngIf="selectedVideo?.embedUrl">
-          <iframe
-            [src]="selectedVideo?.embedUrl"
-            width="100%"
-            height="315"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
-        </div>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
 
   <!-- Modal podcast (lecteur audio intégré) -->
   <ion-modal
@@ -195,8 +169,6 @@
           <p class="podcast-player-description" *ngIf="selectedPodcast.description">
             {{ selectedPodcast.description }}
           </p>
-
-
         </div>
       </ion-content>
     </ng-template>
