@@ -102,6 +102,8 @@ export class KalukalangaPage implements OnInit {
     { amount: 20, label: '20€' },
     { amount: 50, label: '50€' },
     { amount: 100, label: '100€' },
+    { amount: 200, label: '200€' },
+    { amount: 300, label: '300€' },
   ];
 
   constructor(
@@ -161,7 +163,7 @@ export class KalukalangaPage implements OnInit {
     const baseUrl = 'https://glcbaudour.be/don/';
     const url =
       amount && amount > 0
-        ? `${baseUrl}?amount=${encodeURIComponent(String(amount))}`
+        ? `${baseUrl}?amount=${encodeURIComponent(String(amount))}&source=Mission%20Kalukalanga`
         : baseUrl;
 
     await Browser.open({ url });

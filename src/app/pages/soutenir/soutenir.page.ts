@@ -110,7 +110,7 @@ export class SoutenirPage implements OnInit {
   async openDonationPage(amount?: number | null) {
     const baseUrl = 'https://glcbaudour.be/don/';
     const url = amount && amount > 0
-      ? `${baseUrl}?amount=${encodeURIComponent(String(amount))}`
+      ? `${baseUrl}?amount=${encodeURIComponent(String(amount))}&source=Don%20au%20GLC%20Baudour`
       : baseUrl;
 
     await Browser.open({ url });
